@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — E-Raport TK ABK{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Welcome -->
+  <div class="bg-gradient-to-r from-primary-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg">
+    <h2 class="text-2xl font-bold mb-1">Selamat datang, {{ user.name }}! 👋</h2>
+    <p class="text-indigo-200 text-sm">Pantau perkembangan siswa ABK dengan mudah dan terstruktur.</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <!-- Total Siswa -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-2xl">👦</div>
+      <div>
+        <div class="text-3xl font-bold text-slate-800">{{ total_students }}</div>
+        <div class="text-sm text-slate-500">{% if user.role == 'admin' %}Total Siswa{% else %}Siswa Dampingan{% endif %}</div>
+      </div>
+    </div>
+
+    <!-- Catatan Hari Ini -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-2xl">📝</div>
+      <div>
+        <div class="text-3xl font-bold text-slate-800">{{ total_reports_today }}</div>
+        <div class="text-sm text-slate-500">Catatan Hari Ini</div>
+      </div>
+    </div>
+
+    {% if user.role == 'admin' %}
+    <!-- Total Raport -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-2xl">📈</div>
+      <div>
+        <div class="text-3xl font-bold text-slate-800">{{ total_assessments }}</div>
+        <div class="text-sm text-slate-500">Raport Kualitatif</div>
+      </div>
+    </div>
+
+    <!-- Siswa Dinilai -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-2xl">✍️</div>
+      <div>
+        <div class="text-3xl font-bold text-slate-800">{{ total_graded_students }}</div>
+        <div class="text-sm text-slate-500">Siswa Dinilai</div>
+      </div>
+    </div>
+    {% else %}
+    <!-- Galeri -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-2xl">📸</div>
+      <div>
+        <div class="text-3xl font-bold text-slate-800">{{ total_gallery_items }}</div>
+        <div class="text-sm text-slate-500">Galeri Kegiatan</div>
+      </div>
+    </div>
+
+    <!-- Raport Diisi -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-2xl">📈</div>
+      <div>
+        <div class="text-3xl font-bold text-slate-800">{{ total_assessments }}</div>
+        <div class="text-sm text-slate-500">Raport Diisi</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Admin Charts Section -->
+  {% if user.role == 'admin' %}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Bar Chart: Perkembangan per Siswa -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <h3 class="font-semibold text-slate-700 mb-4">📊 Indeks Komposit Perkembangan Siswa Terakhir</h3>
+      <div class="h-64 relative">
+        <canvas id="dashBarChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Line Chart: Tren dari Bulan ke Bulan -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <h3 class="font-semibold text-slate-700 mb-4">📈 Rata-rata Tren Perkembangan Sekolah (Bulanan)</h3>
+      <div class="h-64 relative">
+        <canvas id="dashLineChart"></canvas>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Quick Actions -->
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+    <h3 class="font-semibold text-slate-700 mb-4">⚡ Aksi Cepat</h3>
+    <div class="flex flex-wrap gap-3">
+      {% if user.role == 'admin' %}
+      <a href="/students/add" class="flex flex-col items-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors group w-28">
+        <span class="text-3xl group-hover:scale-110 transition-transform">👦</span>
+        <span class="text-xs font-medium text-blue-700">Tambah Siswa</span>
+      </a>
+      {% endif %}
+      {% if user.role != 'admin' %}
+      <a href="/daily-reports/add" class="flex flex-col items-center gap-2 p-4 bg-green-50 hover:bg-green-100 rounded-xl text-center transition-colors group w-28">
+        <span class="text-3xl group-hover:scale-110 transition-transform">📝</span>
+        <span class="text-xs font-medium text-green-700">Input Harian</span>
+      </a>
+      <a href="/assessments/add" class="flex flex-col items-center gap-2 p-4 bg-purple-50 hover:bg-purple-100 rounded-xl text-center transition-colors group w-28">
+        <span class="text-3xl group-hover:scale-110 transition-transform">📈</span>
+        <span class="text-xs font-medium text-purple-700">Buat Raport</span>
+      </a>
+      {% endif %}
+      {% if user.role == 'admin' %}
+      <a href="/evaluations/add" class="flex flex-col items-center gap-2 p-4 bg-indigo-50 hover:bg-indigo-100 rounded-xl text-center transition-colors group w-28">
+        <span class="text-3xl group-hover:scale-110 transition-transform">✍️</span>
+        <span class="text-xs font-medium text-indigo-700">Input Nilai</span>
+      </a>
+      {% endif %}
+      <a href="/gallery" class="flex flex-col items-center gap-2 p-4 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition-colors group w-28">
+        <span class="text-3xl group-hover:scale-110 transition-transform">📸</span>
+        <span class="text-xs font-medium text-amber-700">Galeri</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Reports -->
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold text-slate-700">📋 Catatan Terkini</h3>
+      <a href="/daily-reports" class="text-sm text-primary-600 hover:underline">Lihat semua →</a>
+    </div>
+
+    {% if recent_reports %}
+    <div class="space-y-3">
+      {% for report in recent_reports %}
+      <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">
+          {{ (students_map.get(report.student_id, '?'))[0].upper() }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-medium text-sm text-slate-700">{{ students_map.get(report.student_id, 'Siswa Tidak Diketahui') }}</span>
+            <span class="text-xs text-slate-400 flex-shrink-0">{{ report.date.strftime('%d %b %Y') }}</span>
+          </div>
+          {% if report.notes %}
+          <p class="text-xs text-slate-500 mt-0.5 truncate">{{ report.notes }}</p>
+          {% else %}
+          <p class="text-xs text-slate-400 mt-0.5 italic">Tidak ada catatan</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-slate-400">
+      <div class="text-4xl mb-2">📭</div>
+      <p class="text-sm">Belum ada catatan perkembangan.</p>
+      <a href="/daily-reports/add" class="mt-2 inline-block text-sm text-primary-600 hover:underline">Buat catatan pertama</a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% if user.role == 'admin' %}
+<!-- Chart JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Bar Chart: Latest composite index per student
+const barLabels = {{ bar_labels | safe }};
+const barData = {{ bar_data | safe }};
+
+const ctxBar = document.getElementById('dashBarChart').getContext('2d');
+new Chart(ctxBar, {
+  type: 'bar',
+  data: {
+    labels: barLabels,
+    datasets: [{
+      label: 'Indeks Komposit',
+      data: barData,
+      backgroundColor: 'rgba(99, 102, 241, 0.75)',
+      borderColor: '#6366f1',
+      borderWidth: 1.5,
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { min: 1.0, max: 4.0, ticks: { stepSize: 1.0 } }
+    },
+    plugins: {
+      legend: { display: false }
+    }
+  }
+});
+
+// Line Chart: Average composite score monthly trend
+const lineLabels = {{ line_labels | safe }};
+const lineData = {{ line_data | safe }};
+
+const ctxLine = document.getElementById('dashLineChart').getContext('2d');
+new Chart(ctxLine, {
+  type: 'line',
+  data: {
+    labels: lineLabels,
+    datasets: [{
+      label: 'Rata-rata Sekolah',
+      data: lineData,
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+      borderWidth: 3,
+      fill: true,
+      tension: 0.2,
+      pointBackgroundColor: '#059669',
+      pointBorderColor: '#fff',
+      pointRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { min: 1.0, max: 4.0, ticks: { stepSize: 1.0 } }
+    }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}

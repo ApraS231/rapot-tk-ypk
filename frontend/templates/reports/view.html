@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Perkembangan - {{ student.name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: #334155;
+    }
+    
+    .print-button {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .back-button {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+    }
+
+    /* Print Specific Styles */
+    @media print {
+      body {
+        background-color: white;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .print-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+      /* Ensure colors print correctly */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      @page {
+        margin: 1.5cm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controls (Hidden on Print) -->
+  <a href="/reports" class="back-button no-print bg-white text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 shadow-sm transition-colors flex items-center gap-2">
+    <span>←</span> Kembali
+  </a>
+  <button onclick="window.print()" class="print-button no-print bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-medium transition-colors flex items-center gap-2 z-50">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+    </svg>
+    Cetak PDF
+  </button>
+
+  <!-- Report Document -->
+  <div class="print-container max-w-4xl mx-auto bg-white min-h-screen my-8 p-10 shadow-lg rounded-sm border border-slate-100">
+    
+    <!-- Header -->
+    <div class="text-center border-b-2 border-slate-800 pb-6 mb-8">
+      <h1 class="text-3xl font-bold text-slate-800 tracking-tight uppercase">{{ school_name }}</h1>
+      <p class="text-slate-500 mt-1">Laporan Perkembangan Kualitatif Anak Berkebutuhan Khusus</p>
+      {% if assessment %}
+      <p class="text-slate-600 font-medium mt-2">Periode: {{ assessment.period }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Student Identify -->
+    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-8 flex flex-wrap gap-x-12 gap-y-4 text-sm">
+      <div>
+        <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Nama Lengkap</div>
+        <div class="font-bold text-slate-800 text-lg">{{ student.name }}</div>
+      </div>
+      <div>
+        <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Usia</div>
+        <div class="font-medium text-slate-700 text-lg">{{ student.age }} Tahun</div>
+      </div>
+      <div>
+        <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Kelas</div>
+        <div class="font-medium text-slate-700 text-lg">{{ student.class_name or '-' }}</div>
+      </div>
+      <div>
+        <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Kekhususan</div>
+        <div class="font-medium text-slate-700 text-lg">{{ student.special_needs or '-' }}</div>
+      </div>
+    </div>
+
+    {% if assessment %}
+    
+    <!-- Assessment Core: Visual Layout using Grid -->
+    <div class="space-y-6">
+      
+      <!-- Motorik & Bahasa -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="border border-indigo-100 rounded-xl overflow-hidden">
+          <div class="bg-indigo-50 border-b border-indigo-100 px-4 py-3 flex items-center gap-2">
+            <span class="text-indigo-600 text-xl">🏃</span>
+            <h3 class="font-bold text-indigo-900">Perkembangan Motorik</h3>
+          </div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.motoric or 'Belum dievaluasi.' }}</div>
+        </div>
+
+        <div class="border border-emerald-100 rounded-xl overflow-hidden">
+          <div class="bg-emerald-50 border-b border-emerald-100 px-4 py-3 flex items-center gap-2">
+            <span class="text-emerald-600 text-xl">🗣️</span>
+            <h3 class="font-bold text-emerald-900">Bahasa & Komunikasi</h3>
+          </div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.language or 'Belum dievaluasi.' }}</div>
+        </div>
+
+      </div>
+
+      <!-- Sosial & Kognitif -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="border border-amber-100 rounded-xl overflow-hidden">
+          <div class="bg-amber-50 border-b border-amber-100 px-4 py-3 flex items-center gap-2">
+            <span class="text-amber-600 text-xl">🤝</span>
+            <h3 class="font-bold text-amber-900">Sosial & Emosional</h3>
+          </div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.social or 'Belum dievaluasi.' }}</div>
+        </div>
+
+        <div class="border border-blue-100 rounded-xl overflow-hidden">
+          <div class="bg-blue-50 border-b border-blue-100 px-4 py-3 flex items-center gap-2">
+            <span class="text-blue-600 text-xl">🧩</span>
+            <h3 class="font-bold text-blue-900">Intelektual (Kognitif)</h3>
+          </div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.cognitive or 'Belum dievaluasi.' }}</div>
+        </div>
+
+      </div>
+
+      <!-- Kemandirian (Full Width) -->
+      <div class="border border-amber-200 rounded-xl overflow-hidden">
+        <div class="bg-amber-50/50 border-b border-amber-100 px-4 py-3 flex items-center gap-2">
+          <span class="text-amber-500 text-xl">🏠</span>
+          <h3 class="font-bold text-slate-800">Perkembangan Kemandirian</h3>
+        </div>
+        <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.independence or 'Belum dievaluasi.' }}</div>
+      </div>
+
+    </div>
+
+    {% if evaluation %}
+    <!-- Quantitative Score Card -->
+    <div class="mt-8 border border-indigo-200 rounded-xl overflow-hidden">
+      <div class="bg-indigo-600 px-4 py-3 flex items-center justify-between text-white">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">📊</span>
+          <h3 class="font-bold">Indeks Hasil Penilaian Kuantitatif BK</h3>
+        </div>
+        <span class="px-2.5 py-0.5 bg-indigo-500 text-white rounded-full text-xs font-semibold">Tanggal: {{ evaluation.date.strftime('%d %b %Y') }}</span>
+      </div>
+      
+      <div class="p-5 bg-indigo-50/30 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-b border-indigo-100">
+        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
+          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Skor Komposit</div>
+          <div class="text-3xl font-black text-slate-800">{{ "%.2f"|format(evaluation.composite_index) }}</div>
+          <div class="text-[10px] text-slate-400 mt-1">Skala 1.00 - 4.00</div>
+        </div>
+        
+        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
+          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Persentase Indeks</div>
+          <div class="text-3xl font-black text-primary-600">{{ evaluation.index_percentage }}%</div>
+          <div class="text-[10px] text-slate-400 mt-1">Skala 0% - 100%</div>
+        </div>
+        
+        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
+          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Hasil Predikat</div>
+          <div class="mt-1">
+            <span class="px-3 py-1 rounded-full text-sm font-bold
+              {% if evaluation.predicate == 'BSB' %}bg-green-100 text-green-700
+              {% elif evaluation.predicate == 'BSH' %}bg-blue-100 text-blue-700
+              {% elif evaluation.predicate == 'MB' %}bg-orange-100 text-orange-700
+              {% else %}bg-red-100 text-red-700{% endif %}">
+              {{ evaluation.predicate }}
+            </span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-2 font-medium">
+            {% if evaluation.predicate == 'BSB' %}Berkembang Sangat Baik
+            {% elif evaluation.predicate == 'BSH' %}Berkembang Sesuai Harapan
+            {% elif evaluation.predicate == 'MB' %}Mulai Berkembang
+            {% else %}Belum Berkembang{% endif %}
+          </div>
+        </div>
+        
+        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm">
+          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2 text-center">Rincian Nilai Domain</div>
+          <div class="space-y-1 text-xs">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Kognitif:</span>
+              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_cognitive) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Motorik:</span>
+              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_motoric) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Bahasa:</span>
+              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_language) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Sosial:</span>
+              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_social) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Mandiri:</span>
+              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_independence) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Summary (Full width) -->
+    <div class="mt-8 border border-purple-100 rounded-xl overflow-hidden">
+      <div class="bg-purple-50 border-b border-purple-100 px-4 py-3 flex items-center gap-2">
+        <span class="text-purple-600 text-xl">⭐</span>
+        <h3 class="font-bold text-purple-900">Kesimpulan & Rekomendasi</h3>
+      </div>
+      <div class="p-5 text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">{{ assessment.summary or 'Belum ada kesimpulan.' }}</div>
+    </div>
+
+    <!-- Signature Area -->
+    <div class="mt-16 pt-8 flex justify-between text-sm text-slate-800">
+      <div class="text-center">
+        <p class="mb-16">Mengetahui,<br>Orang Tua / Wali</p>
+        <div class="w-48 border-b border-slate-400 mx-auto"></div>
+      </div>
+      <div class="text-center">
+        <p class="mb-16">Kepala Sekolah<br>&nbsp;</p>
+        <div class="w-48 border-b border-slate-400 mx-auto"></div>
+      </div>
+      <div class="text-center">
+        <p class="mb-16">Guru Pendamping / Shadow Teacher<br>&nbsp;</p>
+        <div class="w-48 border-b border-slate-400 mx-auto"></div>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="text-center py-20">
+      <h3 class="text-xl font-bold text-slate-400">Belum ada Raport (Assessment) yang dibuat untuk siswa ini.</h3>
+      <p class="text-slate-500 mt-2">Silakan buat assessment kualitatif terlebih dahulu.</p>
+    </div>
+    {% endif %}
+
+  </div>
+
+</body>
+</html>

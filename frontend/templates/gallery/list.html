@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Galeri Kegiatan — E-Raport TK ABK{% endblock %}
+{% block page_title %}Galeri Kegiatan{% endblock %}
+
+{% block content %}
+<div class="space-y-5">
+  <!-- Header actions -->
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <form method="GET" action="/gallery" class="flex items-center gap-2">
+      <select name="student_id" onchange="this.form.submit()"
+        class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white">
+        <option value="">Semua Siswa</option>
+        {% for s in students %}
+        <option value="{{ s.id }}" {% if filter_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+
+    <!-- Upload Form (collapsible) -->
+    {% if user.role != 'admin' %}
+    <button onclick="document.getElementById('upload-form').classList.toggle('hidden')"
+      class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium shadow transition hover:-translate-y-0.5">
+      📤 Upload Foto
+    </button>
+    {% endif %}
+  </div>
+
+  <!-- Upload Form -->
+  <div id="upload-form" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+    <h3 class="font-semibold text-slate-700 mb-4">Upload Foto Kegiatan</h3>
+    <form method="POST" action="/gallery/upload" enctype="multipart/form-data" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="upload-student">Siswa <span class="text-red-500">*</span></label>
+          <select id="upload-student" name="student_id" required
+            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white">
+            <option value="">— Pilih —</option>
+            {% for s in students %}
+            <option value="{{ s.id }}" {% if filter_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="activity_date">Tanggal <span class="text-red-500">*</span></label>
+          <input type="date" id="activity_date" name="activity_date" required
+            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="description">Deskripsi</label>
+          <input type="text" id="description" name="description"
+            placeholder="Nama aktivitas..."
+            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="image">Foto <span class="text-red-500">*</span></label>
+        <input type="file" id="image" name="image" accept="image/*" required
+          class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer" />
+      </div>
+      <div class="flex gap-3">
+        <button type="submit" id="btn-upload-gallery"
+          class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl text-sm transition shadow">
+          📤 Upload
+        </button>
+        <button type="button" onclick="document.getElementById('upload-form').classList.add('hidden')"
+          class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">
+          Batal
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Gallery Grid -->
+  {% if items %}
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for item in items %}
+    <div class="group relative bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+      <div class="aspect-square overflow-hidden bg-slate-100">
+        <img src="{{ item.image_path }}"
+             alt="{{ item.description or 'Foto kegiatan' }}"
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      </div>
+      <div class="p-3">
+        <div class="text-xs font-medium text-slate-700 truncate">{{ students_map.get(item.student_id, '—') }}</div>
+        {% if item.description %}
+        <div class="text-xs text-slate-500 truncate mt-0.5">{{ item.description }}</div>
+        {% endif %}
+        <div class="text-xs text-slate-400 mt-0.5">{{ item.date.strftime('%d %b %Y') }}</div>
+      </div>
+      <!-- Delete overlay -->
+      {% if user.role != 'admin' %}
+      <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <a href="/gallery/{{ item.id }}/delete"
+           onclick="return confirm('Hapus foto ini?')"
+           class="w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center justify-center text-xs shadow transition">
+          🗑️
+        </a>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
+    <div class="text-5xl mb-3">📷</div>
+    <h3 class="font-semibold text-slate-700 mb-1">Belum ada foto kegiatan</h3>
+    <p class="text-sm text-slate-400 mb-4">Upload foto untuk mendokumentasikan kegiatan anak</p>
+    {% if user.role != 'admin' %}
+    <button onclick="document.getElementById('upload-form').classList.remove('hidden')"
+      class="inline-block px-4 py-2 bg-primary-600 text-white text-sm rounded-xl hover:bg-primary-700 transition">
+      📤 Upload Foto
+    </button>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

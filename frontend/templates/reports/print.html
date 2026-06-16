@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raport {{ student.name }} — {{ assessment.period }}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      padding: 2rem;
+    }
+
+    .report-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    /* Header */
+    .report-header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      padding: 2rem 2.5rem;
+    }
+
+    .school-name {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+
+    .report-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .report-subtitle {
+      font-size: 0.875rem;
+      opacity: 0.75;
+    }
+
+    /* Student Info */
+    .student-info-bar {
+      background: #f1f5f9;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .student-info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .info-item label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-item span {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    /* Content */
+    .report-body {
+      padding: 2rem 2.5rem;
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    /* Aspect Cards */
+    .aspects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .aspect-card {
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+
+    .aspect-card.motoric     { background: #fef2f2; border-color: #fecaca; }
+    .aspect-card.language    { background: #eff6ff; border-color: #bfdbfe; }
+    .aspect-card.social      { background: #f0fdf4; border-color: #bbf7d0; }
+    .aspect-card.cognitive   { background: #fefce8; border-color: #fde68a; }
+    .aspect-card.independence { background: #fff7ed; border-color: #ffedd5; }
+
+    .aspect-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .motoric     .aspect-label { color: #dc2626; }
+    .language    .aspect-label { color: #2563eb; }
+    .social      .aspect-label { color: #16a34a; }
+    .cognitive   .aspect-label { color: #ca8a04; }
+    .independence .aspect-label { color: #ea580c; }
+
+    .aspect-content {
+      font-size: 0.8125rem;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    /* Summary */
+    .summary-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-text {
+      font-size: 0.875rem;
+      color: #334155;
+      line-height: 1.7;
+    }
+
+    /* Signature */
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .signature-box {
+      text-align: center;
+    }
+
+    .signature-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-bottom: 3rem;
+    }
+
+    .signature-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-top: 1px solid #94a3b8;
+      padding-top: 0.5rem;
+    }
+
+    /* Print Button */
+    .print-actions {
+      text-align: center;
+      padding: 1.5rem;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-print {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .btn-print:hover { background: #4338ca; }
+
+    .btn-back {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: white;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-back:hover { background: #f1f5f9; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .report-container { box-shadow: none; border-radius: 0; }
+      .print-actions { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="report-container">
+  <!-- Header -->
+  <div class="report-header">
+    <div class="school-name">🌟 E-Raport TK — Anak Berkebutuhan Khusus</div>
+    <div class="report-title">Laporan Perkembangan Kualitatif</div>
+    <div class="report-subtitle">Periode: {{ assessment.period }}</div>
+  </div>
+
+  <!-- Student Info -->
+  <div class="student-info-bar">
+    <div class="student-info-grid">
+      <div class="info-item">
+        <label>Nama Siswa</label>
+        <span>{{ student.name }}</span>
+      </div>
+      <div class="info-item">
+        <label>Usia</label>
+        <span>{{ student.age }} Tahun</span>
+      </div>
+      <div class="info-item">
+        <label>Kelas</label>
+        <span>{{ student.class_name or '—' }}</span>
+      </div>
+      <div class="info-item">
+        <label>Kebutuhan Khusus</label>
+        <span>{{ student.special_needs or '—' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Body -->
+  <div class="report-body">
+
+    <!-- Aspek Perkembangan -->
+    <div class="section-title">📊 Penilaian Aspek Perkembangan</div>
+    <div class="aspects-grid">
+      <div class="aspect-card motoric">
+        <div class="aspect-label">🏃 Motorik</div>
+        <div class="aspect-content">{{ assessment.motoric or 'Belum diisi.' }}</div>
+      </div>
+      <div class="aspect-card language">
+        <div class="aspect-label">💬 Bahasa & Komunikasi</div>
+        <div class="aspect-content">{{ assessment.language or 'Belum diisi.' }}</div>
+      </div>
+      <div class="aspect-card social">
+        <div class="aspect-label">🤝 Sosial & Emosional</div>
+        <div class="aspect-content">{{ assessment.social or 'Belum diisi.' }}</div>
+      </div>
+      <div class="aspect-card cognitive">
+        <div class="aspect-label">🧠 Intelektual (Kognitif)</div>
+        <div class="aspect-content">{{ assessment.cognitive or 'Belum diisi.' }}</div>
+      </div>
+      <div class="aspect-card independence" style="grid-column: span 2;">
+        <div class="aspect-label">🏠 Kemandirian</div>
+        <div class="aspect-content">{{ assessment.independence or 'Belum diisi.' }}</div>
+      </div>
+    </div>
+
+    <!-- Penilaian Kuantitatif BK -->
+    {% if evaluation %}
+    <div class="section-title">📈 Hasil Penilaian Kuantitatif BK</div>
+    <div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr) 1.5fr; gap: 1rem;">
+      <div style="background: white; padding: 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+        <div style="font-size: 0.6rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Skor Komposit</div>
+        <div style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-top: 0.25rem;">{{ "%.2f"|format(evaluation.composite_index) }}</div>
+        <div style="font-size: 0.55rem; color: #94a3b8; margin-top: 0.1rem;">Skala 1.00 - 4.00</div>
+      </div>
+      
+      <div style="background: white; padding: 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+        <div style="font-size: 0.6rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Persentase Indeks</div>
+        <div style="font-size: 1.5rem; font-weight: 800; color: #4f46e5; margin-top: 0.25rem;">{{ evaluation.index_percentage }}%</div>
+        <div style="font-size: 0.55rem; color: #94a3b8; margin-top: 0.1rem;">Skala 0% - 100%</div>
+      </div>
+      
+      <div style="background: white; padding: 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div style="font-size: 0.6rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Predikat</div>
+        <span style="font-size: 0.75rem; font-weight: 850; padding: 0.15rem 0.5rem; border-radius: 4px; 
+          {% if evaluation.predicate == 'BSB' %}background: #dcfce7; color: #15803d;
+          {% elif evaluation.predicate == 'BSH' %}background: #dbeafe; color: #1d4ed8;
+          {% elif evaluation.predicate == 'MB' %}background: #ffedd5; color: #c2410c;
+          {% else %}background: #fee2e2; color: #b91c1c;{% endif %}">
+          {{ evaluation.predicate }}
+        </span>
+      </div>
+      
+      <div style="background: white; padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.7rem;">
+        <div style="font-size: 0.6rem; color: #64748b; font-weight: 700; text-transform: uppercase; text-align: center; margin-bottom: 0.25rem;">Rata-rata Domain</div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.05rem;">
+          <span style="color: #64748b;">Kognitif:</span> <strong style="color: #334155;">{{ "%.2f"|format(evaluation.avg_cognitive) }}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.05rem;">
+          <span style="color: #64748b;">Motorik:</span> <strong style="color: #334155;">{{ "%.2f"|format(evaluation.avg_motoric) }}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.05rem;">
+          <span style="color: #64748b;">Bahasa:</span> <strong style="color: #334155;">{{ "%.2f"|format(evaluation.avg_language) }}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.05rem;">
+          <span style="color: #64748b;">Sosial:</span> <strong style="color: #334155;">{{ "%.2f"|format(evaluation.avg_social) }}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #64748b;">Mandiri:</span> <strong style="color: #334155;">{{ "%.2f"|format(evaluation.avg_independence) }}</strong>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Ringkasan -->
+    {% if assessment.summary %}
+    <div class="section-title">📋 Ringkasan Perkembangan</div>
+    <div class="summary-box">
+      <p class="summary-text">{{ assessment.summary }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Signature -->
+    <div class="signature-grid">
+      <div class="signature-box">
+        <div class="signature-label">Mengetahui,<br>Kepala Sekolah</div>
+        <div class="signature-name">____________________</div>
+      </div>
+      <div class="signature-box">
+        <div class="signature-label">Pendamping / Shadow Teacher</div>
+        <div class="signature-name">{{ user.name }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Print Actions -->
+  <div class="print-actions">
+    <button onclick="window.print()" class="btn-print">🖨️ Cetak / Simpan PDF</button>
+    <a href="/assessments" class="btn-back">← Kembali</a>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Riwayat Nilai Kuantitatif — E-Raport TK ABK{% endblock %}
+{% block page_title %}Riwayat Penilaian Kuantitatif{% endblock %}
+
+{% block content %}
+<div class="space-y-5">
+  <div class="flex items-center justify-between">
+    <p class="text-sm text-slate-500">Daftar seluruh riwayat penilaian kuantitatif siswa</p>
+    <a href="/evaluations/add" id="btn-add-evaluation"
+       class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium shadow transition hover:-translate-y-0.5">
+      + Input Penilaian
+    </a>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    {% if evaluations %}
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-slate-600 text-left">
+          <th class="px-5 py-3.5 font-semibold">Siswa</th>
+          <th class="px-5 py-3.5 font-semibold">Tanggal</th>
+          <th class="px-5 py-3.5 font-semibold">Kelas</th>
+          <th class="px-5 py-3.5 font-semibold">Diagnosa</th>
+          <th class="px-5 py-3.5 font-semibold text-center">Indeks Komposit</th>
+          <th class="px-5 py-3.5 font-semibold text-center">Persentase</th>
+          <th class="px-5 py-3.5 font-semibold text-center">Predikat</th>
+          <th class="px-5 py-3.5 font-semibold text-right">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for ev in evaluations %}
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="px-5 py-3.5 font-semibold text-slate-800">
+            {{ students_map.get(ev.student_id, 'Siswa Tidak Diketahui') }}
+          </td>
+          <td class="px-5 py-3.5 text-slate-500">
+            {{ ev.date.strftime('%d %b %Y') }}
+          </td>
+          <td class="px-5 py-3.5 text-slate-600 font-medium">
+            {{ ev.class_name or '—' }}
+          </td>
+          <td class="px-5 py-3.5 text-xs text-slate-500">
+            {{ ev.diagnosa or '—' }}
+          </td>
+          <td class="px-5 py-3.5 text-center font-bold text-slate-800">
+            {{ "%.2f"|format(ev.composite_index) }}
+          </td>
+          <td class="px-5 py-3.5 text-center font-bold text-primary-600">
+            {{ ev.index_percentage }}%
+          </td>
+          <td class="px-5 py-3.5 text-center">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold
+              {% if ev.predicate == 'BSB' %}bg-green-100 text-green-700
+              {% elif ev.predicate == 'BSH' %}bg-blue-100 text-blue-700
+              {% elif ev.predicate == 'MB' %}bg-orange-100 text-orange-700
+              {% else %}bg-red-100 text-red-700{% endif %}">
+              {{ ev.predicate }}
+            </span>
+          </td>
+          <td class="px-5 py-3.5 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <a href="/evaluations/rekap?student_id={{ ev.student_id }}"
+                 class="px-2.5 py-1 text-xs text-primary-600 hover:bg-primary-50 rounded-lg transition">Tren</a>
+              <a href="/evaluations/{{ ev.id }}/delete"
+                 onclick="return confirm('Hapus penilaian ini?')"
+                 class="px-2.5 py-1 text-xs text-red-500 hover:bg-red-50 rounded-lg transition">Hapus</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-12 text-slate-400">
+      <div class="text-5xl mb-3">📭</div>
+      <p class="text-sm">Belum ada riwayat penilaian kuantitatif.</p>
+      <a href="/evaluations/add" class="mt-2 inline-block text-sm text-primary-600 hover:underline">Mulai Penilaian Pertama</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

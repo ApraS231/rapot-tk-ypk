@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{% if edit_user %}Edit Pengguna{% else %}Tambah Pengguna{% endif %} — E-Raport TK ABK{% endblock %}
+{% block page_title %}{% if edit_user %}Edit Data Pengguna{% else %}Tambah Pengguna Baru{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-xl">👥</div>
+      <div>
+        <h2 class="font-semibold text-slate-800">{% if edit_user %}Edit: {{ edit_user.name }}{% else %}Tambah Pengguna Baru{% endif %}</h2>
+        <p class="text-xs text-slate-400">{% if edit_user %}Perbarui data akun pengguna{% else %}Buat akun untuk pendamping atau admin{% endif %}</p>
+      </div>
+    </div>
+
+    {% if error %}
+    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{% if edit_user %}/users/{{ edit_user.id }}/edit{% else %}/users/add{% endif %}" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="name">Nama Lengkap <span class="text-red-500">*</span></label>
+        <input type="text" id="name" name="name" required placeholder="Nama pengguna"
+          value="{{ edit_user.name if edit_user else '' }}"
+          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="email">Email <span class="text-red-500">*</span></label>
+        <input type="email" id="email" name="email" required placeholder="email@contoh.com"
+          value="{{ edit_user.email if edit_user else '' }}"
+          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+      </div>
+
+      {% if not edit_user %}
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="password">Password <span class="text-red-500">*</span></label>
+        <input type="password" id="password" name="password" required placeholder="Minimal 8 karakter"
+          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+      </div>
+      {% endif %}
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="role">Role <span class="text-red-500">*</span></label>
+        <select id="role" name="role"
+          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white transition">
+          <option value="pendamping" {% if edit_user and edit_user.role == 'pendamping' %}selected{% endif %}>Pendamping / Shadow Teacher</option>
+          <option value="admin" {% if edit_user and edit_user.role == 'admin' %}selected{% endif %}>Admin</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" id="btn-save-user"
+          class="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl text-sm transition shadow">
+          {% if edit_user %}💾 Simpan Perubahan{% else %}✅ Tambah Pengguna{% endif %}
+        </button>
+        <a href="/users" class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

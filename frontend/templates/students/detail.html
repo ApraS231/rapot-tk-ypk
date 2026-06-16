@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }} — E-Raport TK ABK{% endblock %}
+{% block page_title %}Detail Siswa{% endblock %}
+
+{% block content %}
+<div class="space-y-5">
+
+  <!-- Student Card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+    <div class="flex items-start justify-between flex-wrap gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+          {{ student.name[0].upper() }}
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">{{ student.name }}</h2>
+          <div class="flex items-center gap-2 mt-1 flex-wrap">
+            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-lg text-xs">{{ student.age }} tahun</span>
+            {% if student.class_name %}
+            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-xs">{{ student.class_name }}</span>
+            {% endif %}
+            {% if student.special_needs %}
+            <span class="px-2 py-0.5 bg-orange-50 text-orange-700 rounded-lg text-xs">{{ student.special_needs }}</span>
+            {% endif %}
+          </div>
+          {% if student.created_at %}
+          <p class="text-xs text-slate-400 mt-1">Terdaftar: {{ student.created_at.strftime('%d %B %Y') }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="/students/{{ student.id }}/edit"
+           class="px-3 py-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">✏️ Edit</a>
+        <a href="/daily-reports/add?student_id={{ student.id }}"
+           class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition shadow">+ Input Harian</a>
+        <a href="/assessments/add?student_id={{ student.id }}"
+           class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition shadow">+ Raport</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <!-- Recent Daily Reports -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-slate-700">📝 Catatan Perkembangan Terkini</h3>
+        <a href="/daily-reports?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline">Semua →</a>
+      </div>
+      {% if recent_reports %}
+      <div class="space-y-3">
+        {% for r in recent_reports %}
+        <div class="p-3 bg-slate-50 rounded-xl text-sm">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-medium text-slate-700">{{ r.date.strftime('%d %B %Y') }}</span>
+            <a href="/daily-reports/{{ r.id }}/edit" class="text-xs text-slate-400 hover:text-primary-600">Edit</a>
+          </div>
+          {% if r.notes %}<p class="text-slate-600 text-xs line-clamp-2">{{ r.notes }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-400 text-center py-4">Belum ada catatan harian</p>
+      {% endif %}
+    </div>
+
+    <!-- Assessments -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-slate-700">📈 Raport Kualitatif</h3>
+        <a href="/assessments?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline">Semua →</a>
+      </div>
+      {% if assessments %}
+      <div class="space-y-3">
+        {% for a in assessments %}
+        <div class="p-3 bg-slate-50 rounded-xl">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-slate-700">{{ a.period }}</span>
+            <div class="flex items-center gap-1">
+              <a href="/assessments/{{ a.id }}/print" class="text-xs text-blue-600 hover:underline">🖨️ Cetak</a>
+              <a href="/assessments/{{ a.id }}/edit" class="text-xs text-slate-400 hover:text-primary-600 ml-2">Edit</a>
+            </div>
+          </div>
+          {% if a.summary %}<p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ a.summary }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-400 text-center py-4">Belum ada raport</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Gallery Preview -->
+  {% if gallery_items %}
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold text-slate-700">📸 Galeri Kegiatan</h3>
+      <a href="/gallery?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline">Lihat semua →</a>
+    </div>
+    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+      {% for item in gallery_items %}
+      <div class="group relative aspect-square rounded-xl overflow-hidden bg-slate-100">
+        <img src="{{ item.image_path }}" alt="{{ item.description or 'Foto kegiatan' }}"
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

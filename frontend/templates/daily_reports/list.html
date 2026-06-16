@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Perkembangan Harian — E-Raport TK ABK{% endblock %}
+{% block page_title %}Perkembangan Harian{% endblock %}
+
+{% block content %}
+<div class="space-y-5">
+  <!-- Header actions -->
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <form method="GET" action="/daily-reports" class="flex items-center gap-2">
+      <select name="student_id" onchange="this.form.submit()"
+        class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white">
+        <option value="">Semua Siswa</option>
+        {% for s in students %}
+        <option value="{{ s.id }}" {% if filter_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    {% if user.role != 'admin' %}
+    <a href="/daily-reports/add" id="btn-add-report"
+       class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium shadow transition hover:-translate-y-0.5">
+      + Tambah Catatan
+    </a>
+    {% endif %}
+  </div>
+
+  {% if reports %}
+  <div class="space-y-3">
+    {% for r in reports %}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 hover:shadow-md transition-shadow">
+      <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-lg flex-shrink-0">📝</div>
+          <div>
+            <div class="font-semibold text-slate-800">{{ students_map.get(r.student_id, 'Siswa') }}</div>
+            <div class="text-xs text-slate-400">{{ r.date.strftime('%A, %d %B %Y') }}</div>
+          </div>
+        </div>
+        {% if user.role != 'admin' %}
+        <div class="flex items-center gap-2">
+          <a href="/daily-reports/{{ r.id }}/edit" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200 transition">✏️ Edit</a>
+          <a href="/daily-reports/{{ r.id }}/delete"
+             onclick="return confirm('Hapus catatan ini?')"
+             class="px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 rounded-lg border border-red-100 transition">🗑️ Hapus</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {% if r.notes %}
+        <div class="p-3 bg-slate-50 rounded-xl">
+          <div class="text-xs font-medium text-slate-500 mb-1">📌 Catatan</div>
+          <p class="text-sm text-slate-700">{{ r.notes }}</p>
+        </div>
+        {% endif %}
+        {% if r.behavior %}
+        <div class="p-3 bg-orange-50 rounded-xl">
+          <div class="text-xs font-medium text-orange-600 mb-1">🧠 Perilaku</div>
+          <p class="text-sm text-slate-700">{{ r.behavior }}</p>
+        </div>
+        {% endif %}
+        {% if r.social_interaction %}
+        <div class="p-3 bg-blue-50 rounded-xl">
+          <div class="text-xs font-medium text-blue-600 mb-1">🤝 Interaksi Sosial</div>
+          <p class="text-sm text-slate-700">{{ r.social_interaction }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
+    <div class="text-5xl mb-3">📭</div>
+    <h3 class="font-semibold text-slate-700 mb-1">Belum ada catatan perkembangan</h3>
+    <p class="text-sm text-slate-400 mb-4">Mulai catat perkembangan harian siswa</p>
+    {% if user.role != 'admin' %}
+    <a href="/daily-reports/add" class="inline-block px-4 py-2 bg-primary-600 text-white text-sm rounded-xl hover:bg-primary-700 transition">+ Tambah Catatan</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Laporan Perkembangan — E-Raport TK ABK{% endblock %}
+{% block page_title %}Laporan Perkembangan Anak{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-lg font-semibold text-slate-800">Daftar Laporan Siswa</h2>
+      <p class="text-sm text-slate-500">Pilih siswa untuk menghasilkan laporan (dapat dicetak sebagai PDF).</p>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-50 text-slate-500 text-sm border-b border-slate-100">
+          <th class="py-3 px-4 font-medium rounded-tl-xl">Nama Siswa</th>
+          <th class="py-3 px-4 font-medium">Umur</th>
+          <th class="py-3 px-4 font-medium">Kelas</th>
+          <th class="py-3 px-4 font-medium">Status Raport</th>
+          <th class="py-3 px-4 font-medium rounded-tr-xl w-32 text-center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm text-slate-700 divide-y divide-slate-100">
+        {% for item in students_data %}
+        <tr class="hover:bg-slate-50/70 transition-colors">
+          <td class="py-4 px-4">
+            <div class="font-medium text-slate-800">{{ item.student.name }}</div>
+            <div class="text-xs text-slate-400 mt-0.5">{{ item.student.special_needs or 'Tidak ada data ABK' }}</div>
+          </td>
+          <td class="py-4 px-4">{{ item.student.age }} tahun</td>
+          <td class="py-4 px-4">
+            <span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-medium border border-indigo-100">
+              {{ item.student.class_name or 'Belum ditentukan' }}
+            </span>
+          </td>
+          <td class="py-4 px-4">
+            {% if item.assessments_count > 0 %}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-medium border border-green-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Siap Cetak
+            </span>
+            {% else %}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-medium border border-amber-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Belum ada Raport
+            </span>
+            {% endif %}
+          </td>
+          <td class="py-4 px-4 text-center">
+            <a href="/reports/{{ item.student.id }}" 
+               class="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-xs transition-colors shadow-sm w-full font-medium {% if item.assessments_count == 0 %}opacity-50 cursor-not-allowed pointer-events-none{% endif %}">
+              🖼️ Lihat Laporan
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="py-8 text-center text-slate-400">
+            <div class="text-4xl mb-2">📭</div>
+            <p>Belum ada data siswa.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
