@@ -114,9 +114,14 @@ async def gallery_delete(item_id: int, request: Request, db: Session = Depends(g
             return RedirectResponse(url="/gallery")
             
         rel_path = item.image_path.lstrip("/")
-        file_path = os.path.join(BASE_DIR, "frontend", "static", rel_path.replace("static/", "", 1))
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        # Gunakan basename untuk ekstrak nama file secara aman, hindari manipulasi string rapuh
+        filename = os.path.basename(rel_path)
+        file_path = os.path.join(BASE_DIR, "frontend", "static", "uploads", filename)
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        except Exception:
+            pass  # Lanjutkan hapus DB meski file fisik gagal dihapus
         db.delete(item)
         db.commit()
     return RedirectResponse(url="/gallery?msg=Foto+kegiatan+berhasil+dihapus", status_code=302)

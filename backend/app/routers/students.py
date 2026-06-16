@@ -7,9 +7,14 @@ from typing import Optional
 from backend.app.database import get_db
 from backend.app.models.student import Student
 from backend.app.models.user import User
+from backend.app.models.daily_report import DailyReport
+from backend.app.models.assessment import Assessment
+from backend.app.models.gallery import Gallery
+from backend.app.models.evaluation import Evaluation
 from backend.app.auth.jwt import decode_access_token
 
 import os
+import shutil
 
 templates_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
@@ -186,6 +191,25 @@ async def student_delete(student_id: int, request: Request, db: Session = Depend
         return RedirectResponse(url="/students")
     student = db.query(Student).filter(Student.id == student_id).first()
     if student:
+        # 1. Hapus file gambar gallery dari disk terlebih dahulu
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        gallery_items = db.query(Gallery).filter(Gallery.student_id == student_id).all()
+        for item in gallery_items:
+            try:
+                rel = item.image_path.lstrip("/").replace("static/", "", 1)
+                file_path = os.path.join(BASE_DIR, "frontend", "static", rel)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except Exception:
+                pass  # Lanjutkan meski file fisik gagal dihapus
+
+        # 2. Hapus semua data terkait dari database
+        db.query(Gallery).filter(Gallery.student_id == student_id).delete(synchronize_session=False)
+        db.query(DailyReport).filter(DailyReport.student_id == student_id).delete(synchronize_session=False)
+        db.query(Assessment).filter(Assessment.student_id == student_id).delete(synchronize_session=False)
+        db.query(Evaluation).filter(Evaluation.student_id == student_id).delete(synchronize_session=False)
+
+        # 3. Hapus data siswa
         db.delete(student)
         db.commit()
     return RedirectResponse(url="/students?msg=Data+siswa+berhasil+dihapus", status_code=302)

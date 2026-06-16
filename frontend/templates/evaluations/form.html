@@ -160,5 +160,53 @@ function switchDomain(domainKey) {
   activeBtn.classList.remove('border-transparent', 'text-slate-400');
   activeBtn.classList.add('border-primary-500', 'text-primary-600');
 }
+
+// Validasi form: cek semua radio button (termasuk di tab tersembunyi)
+document.querySelector('form').addEventListener('submit', function(e) {
+  // Kumpulkan semua nama radio group yang unik
+  const allRadios = document.querySelectorAll('input[type="radio"]');
+  const radioGroups = new Set([...allRadios].map(r => r.name));
+
+  let firstMissingDomain = null;
+  let missingCount = 0;
+
+  // Reset highlight sebelumnya
+  document.querySelectorAll('.domain-content').forEach(el => {
+    el.querySelectorAll('.border-red-300').forEach(item => {
+      item.classList.remove('border-red-300', 'bg-red-50');
+    });
+  });
+
+  for (const groupName of radioGroups) {
+    const groupRadios = document.querySelectorAll(`input[name="${groupName}"]`);
+    const isChecked = [...groupRadios].some(r => r.checked);
+
+    if (!isChecked) {
+      missingCount++;
+      // Temukan domain yang mengandung radio ini
+      const parentDomain = groupRadios[0].closest('.domain-content');
+      if (parentDomain && !firstMissingDomain) {
+        firstMissingDomain = parentDomain.id.replace('domain-content-', '');
+      }
+      // Highlight item yang belum diisi
+      const itemCard = groupRadios[0].closest('div.p-4');
+      if (itemCard) {
+        itemCard.classList.add('border-red-300', 'bg-red-50');
+      }
+    }
+  }
+
+  if (missingCount > 0) {
+    e.preventDefault();
+    // Pindah ke tab domain pertama yang ada item belum diisi
+    if (firstMissingDomain) {
+      switchDomain(firstMissingDomain);
+    }
+    // Tampilkan toast error
+    if (typeof showToast === 'function') {
+      showToast(`Masih ada ${missingCount} indikator yang belum diberi skor!`, 'error');
+    }
+  }
+});
 </script>
 {% endblock %}

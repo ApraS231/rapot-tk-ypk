@@ -124,18 +124,20 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     monthly_data = db.query(
         func.strftime("%Y-%m", Evaluation.date).label("month"),
         func.avg(Evaluation.composite_index).label("avg_index")
-    ).group_by("month").order_by("month").all()
+    ).filter(Evaluation.date.isnot(None)).group_by("month").order_by("month").all()
     
     line_labels = []
     line_data = []
     for m in monthly_data:
+        if m[0] is None:
+            continue  # Lewati entri dengan bulan NULL
         try:
             formatted_month = datetime.strptime(m[0], "%Y-%m").strftime("%b %Y")
             line_labels.append(formatted_month)
             line_data.append(round(m[1], 2))
         except Exception:
-            line_labels.append(m[0])
-            line_data.append(round(m[1], 2))
+            line_labels.append(str(m[0]))
+            line_data.append(round(m[1], 2) if m[1] is not None else 0)
 
     return templates.TemplateResponse(
         request, "dashboard.html",

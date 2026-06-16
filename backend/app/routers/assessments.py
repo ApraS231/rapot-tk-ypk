@@ -226,7 +226,9 @@ async def assessment_print(assessment_id: int, request: Request, db: Session = D
     if not assessment:
         return RedirectResponse(url="/assessments")
     student = db.query(Student).filter(Student.id == assessment.student_id).first()
-    
+    if not student:
+        return RedirectResponse(url="/assessments")
+
     if user.role == "pendamping" and student.teacher_id != user.id:
         return RedirectResponse(url="/assessments")
         

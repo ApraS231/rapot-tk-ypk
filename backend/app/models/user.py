@@ -7,6 +7,9 @@ class UserRole(str, enum.Enum):
     admin = "admin"
     pendamping = "pendamping"
 
+    def __str__(self):
+        return self.value
+
 
 class User(Base):
     __tablename__ = "users"
