@@ -10,6 +10,7 @@ class AssessmentCreate(BaseModel):
     language: Optional[str] = None
     social: Optional[str] = None
     cognitive: Optional[str] = None
+    independence: Optional[str] = None
     summary: Optional[str] = None
 
 
@@ -19,6 +20,7 @@ class AssessmentUpdate(BaseModel):
     language: Optional[str] = None
     social: Optional[str] = None
     cognitive: Optional[str] = None
+    independence: Optional[str] = None
     summary: Optional[str] = None
 
 
@@ -30,6 +32,7 @@ class AssessmentOut(BaseModel):
     language: Optional[str]
     social: Optional[str]
     cognitive: Optional[str]
+    independence: Optional[str]
     summary: Optional[str]
     created_at: Optional[datetime]
 
