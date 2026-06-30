@@ -125,14 +125,21 @@ export const ReportPrint: React.FC<ReportPrintProps> = ({ isEmbed = false }) => 
 
   if (!data) return null;
 
-  const { student, assessment, evaluation, school_name } = data;
+  const { student, assessment, school_name } = data;
 
   // Inline stylesheet for printable layout print-only CSS
   const printStyles = `
     @media print {
-      body {
+      body, html, #root {
         background-color: white !important;
+        background: white !important;
         color: #000 !important;
+      }
+      .print-outer-wrapper {
+        background-color: white !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       .no-print {
         display: none !important;
@@ -148,46 +155,58 @@ export const ReportPrint: React.FC<ReportPrintProps> = ({ isEmbed = false }) => 
         padding: 0 !important;
         box-shadow: none !important;
         border: none !important;
+        background-color: white !important;
+        background: white !important;
       }
       .page-break {
         page-break-before: always;
+        break-before: page;
+      }
+      tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .page-break-inside-avoid {
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
       * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
       @page {
-        margin: 1.5cm;
+        size: A4;
+        margin: 1.2cm 1.5cm;
       }
     }
   `;
 
   return (
-    <div className={`min-h-screen ${isEmbed ? 'p-0 space-y-6' : 'bg-slate-100 py-8 px-4 flex flex-col items-center'}`}>
+    <div className={`min-h-screen print-outer-wrapper ${isEmbed ? 'p-0 space-y-6' : 'bg-neutral-100 py-8 px-4 flex flex-col items-center'}`}>
       <style>{printStyles}</style>
 
       {/* Control Panel (Hidden on Print) */}
       {isEmbed ? (
         // EMBED VIEW HEADER PANEL
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm no-print">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-neutral-200/60 rounded-2xl p-4 shadow-sm no-print max-w-4xl mx-auto w-full">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/reports')}
-              className="p-2 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              className="p-2 hover:bg-neutral-100 rounded-xl transition-colors cursor-pointer"
               title="Kembali ke Daftar Laporan"
             >
-              <ArrowLeft className="w-5 h-5 text-slate-600" />
+              <ArrowLeft className="w-5 h-5 text-neutral-600" />
             </button>
             <div>
-              <h3 className="font-bold text-slate-800 text-sm">Pratinjau Raport: {student.name}</h3>
-              <p className="text-slate-400 text-xs font-semibold">Tinjau isi dokumen kualitatif dan kuantitatif sebelum mencetak</p>
+              <h3 className="font-bold text-neutral-800 text-sm">Pratinjau Raport: {student.name}</h3>
+              <p className="text-neutral-400 text-xs font-semibold">Tinjau isi dokumen kualitatif dan kuantitatif sebelum mencetak</p>
             </div>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <Link
               to={`/reports/${student.id}/print`}
               target="_blank"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 border border-neutral-200 hover:bg-neutral-50 text-neutral-700 font-bold rounded-xl text-xs transition cursor-pointer"
             >
               <ExternalLink className="w-4 h-4" />
               <span>Buka Halaman Cetak</span>
@@ -206,7 +225,7 @@ export const ReportPrint: React.FC<ReportPrintProps> = ({ isEmbed = false }) => 
         <div className="w-full max-w-4xl flex justify-between items-center mb-6 no-print">
           <button
             onClick={() => navigate(`/reports/${student.id}`)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm text-sm font-semibold transition cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-neutral-700 hover:bg-neutral-50 border border-neutral-200 rounded-xl shadow-sm text-sm font-semibold transition cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali ke Pratinjau</span>
@@ -222,214 +241,163 @@ export const ReportPrint: React.FC<ReportPrintProps> = ({ isEmbed = false }) => 
       )}
 
       {/* Main Report A4 Sheet Container */}
-      <div className={`print-container bg-white w-full max-w-4xl rounded-sm border border-slate-200/80 shadow-lg p-6 sm:p-10 ${isEmbed ? 'print-shadow-none border-slate-100 my-0' : 'my-4'}`}>
+      <div className={`print-container bg-white w-full max-w-4xl rounded-xl border border-neutral-200/80 shadow-xl p-8 sm:p-12 mx-auto ${isEmbed ? 'print-shadow-none border-neutral-100 my-0' : 'my-4 animate-in fade-in duration-300'}`}>
         
-        {/* Document Header Logo & Title */}
-        <div className="text-center border-b-2 border-slate-800 pb-6 mb-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase">{school_name}</h1>
-          <p className="text-slate-500 font-semibold text-xs sm:text-sm mt-1">Laporan Perkembangan Kualitatif Anak Berkebutuhan Khusus</p>
+        {/* Document Header (Kop Surat Resmi) */}
+        <div className="text-center border-b-4 border-double border-black pb-5 mb-8">
+          <h1 className="text-2xl sm:text-4xl font-black text-neutral-900 tracking-tight uppercase">{school_name}</h1>
+          <p className="text-neutral-500 font-bold text-xs sm:text-sm uppercase tracking-wider mt-1.5">Laporan Perkembangan Kualitatif Anak Berkebutuhan Khusus</p>
           {assessment && (
-            <p className="text-slate-700 font-bold text-xs sm:text-sm mt-2">Periode Asesmen: {assessment.period}</p>
+            <p className="text-neutral-800 font-extrabold text-xs sm:text-sm mt-2 bg-neutral-100 inline-block px-4 py-1 rounded-full border border-neutral-200/60 no-print">
+              Tahun Ajaran / Periode: {assessment.period}
+            </p>
+          )}
+          {assessment && (
+            <p className="text-neutral-900 font-bold text-xs hidden print:block mt-1">
+              Tahun Ajaran / Periode: {assessment.period}
+            </p>
           )}
         </div>
 
-        {/* Student Biodata Information Box */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-xs sm:text-sm">
-          <div>
-            <div className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mb-1">Nama Lengkap</div>
-            <div className="font-extrabold text-slate-900 text-base">{student.name}</div>
-          </div>
-          <div>
-            <div className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mb-1">Usia</div>
-            <div className="font-bold text-slate-800 text-base">{student.age} Tahun</div>
-          </div>
-          <div>
-            <div className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mb-1">Kelas</div>
-            <div className="font-bold text-slate-800 text-base">{student.class_name || '—'}</div>
-          </div>
-          <div>
-            <div className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mb-1">Kekhususan</div>
-            <div className="font-bold text-slate-800 text-base">{student.special_needs || '—'}</div>
-          </div>
+        {/* Student Biodata Information (Formal Table Layout) */}
+        <div className="mb-8 border border-neutral-200 rounded-xl p-6 bg-neutral-50/50">
+          <table className="w-full text-xs sm:text-sm border-none leading-relaxed">
+            <tbody>
+              <tr>
+                <td className="py-2 font-bold text-neutral-400 uppercase tracking-wider text-[10px] w-1/4">Nama Anak Didik</td>
+                <td className="py-2 text-neutral-800 w-4 font-bold">:</td>
+                <td className="py-2 text-neutral-900 font-black text-base w-1/4">{student.name}</td>
+                <td className="py-2 font-bold text-neutral-400 uppercase tracking-wider text-[10px] w-1/4 pl-8">Kelas</td>
+                <td className="py-2 text-neutral-800 w-4 font-bold">:</td>
+                <td className="py-2 text-neutral-800 font-bold">{student.class_name || '—'}</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-bold text-neutral-400 uppercase tracking-wider text-[10px]">Usia Perkembangan</td>
+                <td className="py-2 text-neutral-800 font-bold">:</td>
+                <td className="py-2 text-neutral-800 font-bold">{student.age} Tahun</td>
+                <td className="py-2 font-bold text-neutral-400 uppercase tracking-wider text-[10px] pl-8">Kekhususan / Diagnosis</td>
+                <td className="py-2 text-neutral-800 font-bold">:</td>
+                <td className="py-2 text-neutral-800 font-bold">
+                  <span className="inline-block bg-amber-50 text-amber-800 border border-amber-200/60 rounded px-2.5 py-0.5 text-xs font-extrabold uppercase">
+                    {student.special_needs || '—'}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {assessment ? (
           <div className="space-y-6">
             
-            {/* Core Qualitative Assessment Aspects */}
-            <div className="space-y-6">
-              
-              {/* Motoric & Language Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Motoric */}
-                <div className="border border-indigo-100 rounded-xl overflow-hidden shadow-sm">
-                  <div className="bg-indigo-50 border-b border-indigo-100 px-4 py-3 flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-indigo-600 shrink-0" />
-                    <h3 className="font-extrabold text-indigo-900 text-sm uppercase tracking-wide">Perkembangan Motorik</h3>
-                  </div>
-                  <div className="p-4 text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                    {assessment.motoric || 'Belum dievaluasi.'}
-                  </div>
-                </div>
+            {/* Core Qualitative Assessment Aspects (Official Table Grid) */}
+            <div className="border border-neutral-250 rounded-xl overflow-hidden shadow-sm bg-white">
+              <table className="w-full border-collapse text-xs sm:text-sm text-left">
+                <thead>
+                  <tr className="bg-neutral-50 border-b border-neutral-250 text-neutral-700 font-extrabold uppercase text-[10px] tracking-wider">
+                    <th className="px-4 py-3.5 text-center w-12 border-r border-neutral-200">No</th>
+                    <th className="px-5 py-3.5 w-64 border-r border-neutral-200">Aspek Perkembangan</th>
+                    <th className="px-6 py-3.5">Uraian Kemajuan Perkembangan Kualitatif</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-200 text-neutral-800 leading-relaxed font-semibold">
+                  
+                  {/* Motoric */}
+                  <tr className="align-top hover:bg-neutral-50/20 transition-colors">
+                    <td className="px-4 py-4 text-center font-bold border-r border-neutral-200 text-neutral-500">1</td>
+                    <td className="px-5 py-4 border-r border-neutral-200">
+                      <div className="flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-neutral-700 shrink-0" />
+                        <div className="font-extrabold text-neutral-900 text-xs sm:text-sm">Perkembangan Motorik</div>
+                      </div>
+                      <span className="text-[10px] text-neutral-400 font-medium mt-1 block pl-6">Motorik halus & kasar, koordinasi gerak fisik</span>
+                    </td>
+                    <td className="px-6 py-4 text-neutral-700 text-xs sm:text-sm whitespace-pre-wrap">{assessment.motoric || 'Belum dievaluasi.'}</td>
+                  </tr>
 
-                {/* Language */}
-                <div className="border border-emerald-100 rounded-xl overflow-hidden shadow-sm">
-                  <div className="bg-emerald-50 border-b border-emerald-100 px-4 py-3 flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-emerald-600 shrink-0" />
-                    <h3 className="font-extrabold text-emerald-900 text-sm uppercase tracking-wide">Bahasa & Komunikasi</h3>
-                  </div>
-                  <div className="p-4 text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                    {assessment.language || 'Belum dievaluasi.'}
-                  </div>
-                </div>
+                  {/* Language */}
+                  <tr className="align-top hover:bg-neutral-50/20 transition-colors">
+                    <td className="px-4 py-4 text-center font-bold border-r border-neutral-200 text-neutral-500">2</td>
+                    <td className="px-5 py-4 border-r border-neutral-200">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-neutral-700 shrink-0" />
+                        <div className="font-extrabold text-neutral-900 text-xs sm:text-sm">Bahasa & Komunikasi</div>
+                      </div>
+                      <span className="text-[10px] text-neutral-400 font-medium mt-1 block pl-6">Kemampuan reseptif, ekspresif, verbal/non-verbal</span>
+                    </td>
+                    <td className="px-6 py-4 text-neutral-700 text-xs sm:text-sm whitespace-pre-wrap">{assessment.language || 'Belum dievaluasi.'}</td>
+                  </tr>
 
-              </div>
+                  {/* Social */}
+                  <tr className="align-top hover:bg-neutral-50/20 transition-colors">
+                    <td className="px-4 py-4 text-center font-bold border-r border-neutral-200 text-neutral-500">3</td>
+                    <td className="px-5 py-4 border-r border-neutral-200">
+                      <div className="flex items-center gap-2">
+                        <Heart className="w-4 h-4 text-neutral-700 shrink-0" />
+                        <div className="font-extrabold text-neutral-900 text-xs sm:text-sm">Sosial & Emosional</div>
+                      </div>
+                      <span className="text-[10px] text-neutral-400 font-medium mt-1 block pl-6">Hubungan sebaya, kontrol emosi, kemandirian sosial</span>
+                    </td>
+                    <td className="px-6 py-4 text-neutral-700 text-xs sm:text-sm whitespace-pre-wrap">{assessment.social || 'Belum dievaluasi.'}</td>
+                  </tr>
 
-              {/* Social & Cognitive Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Social */}
-                <div className="border border-amber-100 rounded-xl overflow-hidden shadow-sm">
-                  <div className="bg-amber-50 border-b border-amber-100 px-4 py-3 flex items-center gap-2">
-                    <Heart className="w-5 h-5 text-amber-600 shrink-0" />
-                    <h3 className="font-extrabold text-amber-900 text-sm uppercase tracking-wide">Sosial & Emosional</h3>
-                  </div>
-                  <div className="p-4 text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                    {assessment.social || 'Belum dievaluasi.'}
-                  </div>
-                </div>
+                  {/* Cognitive */}
+                  <tr className="align-top hover:bg-neutral-50/20 transition-colors">
+                    <td className="px-4 py-4 text-center font-bold border-r border-neutral-200 text-neutral-500">4</td>
+                    <td className="px-5 py-4 border-r border-neutral-200">
+                      <div className="flex items-center gap-2">
+                        <Brain className="w-4 h-4 text-neutral-700 shrink-0" />
+                        <div className="font-extrabold text-neutral-900 text-xs sm:text-sm">Intelektual (Kognitif)</div>
+                      </div>
+                      <span className="text-[10px] text-neutral-400 font-medium mt-1 block pl-6">Konsentrasi, pemahaman konsep, nalar logis</span>
+                    </td>
+                    <td className="px-6 py-4 text-neutral-700 text-xs sm:text-sm whitespace-pre-wrap">{assessment.cognitive || 'Belum dievaluasi.'}</td>
+                  </tr>
 
-                {/* Cognitive */}
-                <div className="border border-blue-100 rounded-xl overflow-hidden shadow-sm">
-                  <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-blue-600 shrink-0" />
-                    <h3 className="font-extrabold text-blue-900 text-sm uppercase tracking-wide">Intelektual (Kognitif)</h3>
-                  </div>
-                  <div className="p-4 text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                    {assessment.cognitive || 'Belum dievaluasi.'}
-                  </div>
-                </div>
+                  {/* Independence */}
+                  <tr className="align-top hover:bg-neutral-50/20 transition-colors">
+                    <td className="px-4 py-4 text-center font-bold border-r border-neutral-200 text-neutral-500">5</td>
+                    <td className="px-5 py-4 border-r border-neutral-200">
+                      <div className="flex items-center gap-2">
+                        <Home className="w-4 h-4 text-neutral-700 shrink-0" />
+                        <div className="font-extrabold text-neutral-900 text-xs sm:text-sm">Perkembangan Kemandirian</div>
+                      </div>
+                      <span className="text-[10px] text-neutral-400 font-medium mt-1 block pl-6">Aktivitas sehari-hari (ADL), bina diri, toilet training</span>
+                    </td>
+                    <td className="px-6 py-4 text-neutral-700 text-xs sm:text-sm whitespace-pre-wrap">{assessment.independence || 'Belum dievaluasi.'}</td>
+                  </tr>
 
-              </div>
-
-              {/* Independence (Full Width) */}
-              <div className="border border-violet-100 rounded-xl overflow-hidden shadow-sm">
-                <div className="bg-violet-50/50 border-b border-violet-150 px-4 py-3 flex items-center gap-2">
-                  <Home className="w-5 h-5 text-violet-600 shrink-0" />
-                  <h3 className="font-extrabold text-slate-800 text-sm uppercase tracking-wide">Perkembangan Kemandirian</h3>
-                </div>
-                <div className="p-4 text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                  {assessment.independence || 'Belum dievaluasi.'}
-                </div>
-              </div>
-
+                </tbody>
+              </table>
             </div>
 
-            {/* Quantitative BK Score Summary Section */}
-            {evaluation && (
-              <div className="border border-indigo-200 rounded-xl overflow-hidden shadow-sm">
-                
-                <div className="bg-indigo-600 px-4 py-3 flex items-center justify-between text-white">
-                  <div className="flex items-center gap-2">
-                    <Award className="w-5 h-5 shrink-0" />
-                    <h3 className="font-bold text-sm uppercase tracking-wider">Indeks Hasil Penilaian Kuantitatif BK</h3>
-                  </div>
-                  <span className="px-2.5 py-0.5 bg-indigo-500 text-white rounded-md text-[10px] font-bold">
-                    Tanggal: {formatDate(evaluation.date)}
-                  </span>
-                </div>
-
-                <div className="p-5 bg-indigo-50/10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-b border-indigo-100">
-                  
-                  {/* Composite Index Card */}
-                  <div className="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Skor Komposit</div>
-                    <div className="text-3xl font-black text-slate-800">{evaluation.composite_index.toFixed(2)}</div>
-                    <div className="text-[9px] text-slate-400 mt-1">Skala 1.00 - 4.00</div>
-                  </div>
-
-                  {/* Percentage Index Card */}
-                  <div className="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Persentase Indeks</div>
-                    <div className="text-3xl font-black text-primary-600">{evaluation.index_percentage}%</div>
-                    <div className="text-[9px] text-slate-400 mt-1">Skala 0% - 100%</div>
-                  </div>
-
-                  {/* Predicate Score Card */}
-                  <div className="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center flex flex-col justify-between items-center">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 w-full">Hasil Predikat</div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-extrabold ${
-                      evaluation.predicate === 'BSB' ? 'bg-green-150 text-green-800' :
-                      evaluation.predicate === 'BSH' ? 'bg-blue-150 text-blue-800' :
-                      evaluation.predicate === 'MB' ? 'bg-amber-150 text-amber-800' :
-                      'bg-rose-150 text-rose-800'
-                    }`}>
-                      {evaluation.predicate}
-                    </span>
-                    <div className="text-[9px] text-slate-400 font-bold mt-1">
-                      {evaluation.predicate === 'BSB' ? 'Berkembang Sangat Baik' :
-                       evaluation.predicate === 'BSH' ? 'Berkembang Sesuai Harapan' :
-                       evaluation.predicate === 'MB' ? 'Mulai Berkembang' : 'Belum Berkembang'}
-                    </div>
-                  </div>
-
-                  {/* Domain Breakdown list */}
-                  <div className="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-xs font-semibold">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2 text-center">Detail Nilai Domain</div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-slate-400 font-normal">Kognitif:</span>
-                        <span className="text-slate-800">{evaluation.avg_cognitive.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400 font-normal">Motorik:</span>
-                        <span className="text-slate-800">{evaluation.avg_motoric.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400 font-normal">Bahasa:</span>
-                        <span className="text-slate-800">{evaluation.avg_language.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400 font-normal">Sosial:</span>
-                        <span className="text-slate-800">{evaluation.avg_social.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400 font-normal">Mandiri:</span>
-                        <span className="text-slate-800">{evaluation.avg_independence.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
+            {/* Summary & Recommendations (Full Width Box) */}
+            <div className="border border-neutral-250 rounded-xl overflow-hidden shadow-sm page-break bg-white">
+              <div className="bg-neutral-50 border-b border-neutral-250 px-5 py-3 flex items-center gap-2">
+                <Star className="w-5 h-5 text-neutral-700 shrink-0" />
+                <h3 className="font-extrabold text-neutral-900 text-xs sm:text-sm uppercase tracking-wider">Kesimpulan & Rekomendasi</h3>
               </div>
-            )}
-
-            {/* Summary & Recommendations (Full Width) */}
-            <div className="border border-purple-150 rounded-xl overflow-hidden shadow-sm page-break">
-              <div className="bg-purple-50/50 border-b border-purple-150 px-4 py-3 flex items-center gap-2">
-                <Star className="w-5 h-5 text-purple-600 shrink-0" />
-                <h3 className="font-extrabold text-purple-950 text-sm uppercase tracking-wide">Kesimpulan & Rekomendasi</h3>
-              </div>
-              <div className="p-5 text-slate-800 text-xs sm:text-sm font-semibold leading-relaxed whitespace-pre-wrap">
+              <div className="p-6 text-neutral-800 text-xs sm:text-sm font-semibold leading-relaxed whitespace-pre-wrap">
                 {assessment.summary || 'Belum ada kesimpulan.'}
               </div>
             </div>
 
-            {/* Signatures Area */}
-            <div className="mt-16 pt-8 flex justify-between text-xs sm:text-sm text-slate-800 font-semibold gap-4">
+            {/* Signatures Area (Formal Transcripts Layout) */}
+            <div className="mt-8 pt-4 flex justify-between text-xs sm:text-sm text-neutral-800 font-semibold gap-6 page-break-inside-avoid">
               <div className="text-center w-1/3">
-                <p className="mb-20">Mengetahui,<br />Orang Tua / Wali</p>
-                <div className="w-32 sm:w-44 border-b border-slate-400 mx-auto"></div>
+                <p className="mb-16 text-neutral-500 uppercase tracking-wider text-[10px] font-bold">Orang Tua / Wali Murid</p>
+                <div className="w-full max-w-[180px] border-b border-neutral-400 mx-auto"></div>
               </div>
               <div className="text-center w-1/3">
-                <p className="mb-20">Kepala Sekolah<br />&nbsp;</p>
-                <div className="w-32 sm:w-44 border-b border-slate-400 mx-auto"></div>
+                <p className="mb-16 text-neutral-500 uppercase tracking-wider text-[10px] font-bold">Kepala Sekolah</p>
+                <div className="w-full max-w-[180px] border-b border-neutral-400 mx-auto"></div>
               </div>
               <div className="text-center w-1/3">
-                <p className="mb-20">Guru Pendamping / Shadow Teacher<br />&nbsp;</p>
-                <div className="w-32 sm:w-44 border-b border-slate-400 mx-auto text-slate-800 truncate">
+                <p className="mb-16 text-neutral-500 uppercase tracking-wider text-[10px] font-bold">
+                  Tanggal: {assessment.created_at ? new Date(assessment.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'}<br />
+                  Guru Pendamping / Shadow Teacher
+                </p>
+                <div className="w-full max-w-[180px] border-b border-neutral-400 mx-auto font-bold text-neutral-900 pb-1">
                   {student.teacher_name}
                 </div>
               </div>
@@ -437,10 +405,10 @@ export const ReportPrint: React.FC<ReportPrintProps> = ({ isEmbed = false }) => 
 
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-xl">
-            <FileCheck2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-slate-500">Belum ada Raport yang dibuat untuk siswa ini.</h3>
-            <p className="text-slate-400 text-xs mt-1">Silakan buat assemen kualitatif di modul Raport Kualitatif terlebih dahulu.</p>
+          <div className="text-center py-20 border-2 border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
+            <FileCheck2 className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-neutral-500">Belum ada Raport yang dibuat untuk siswa ini.</h3>
+            <p className="text-neutral-400 text-xs mt-1">Silakan buat assemen kualitatif di modul Raport Kualitatif terlebih dahulu.</p>
           </div>
         )}
 

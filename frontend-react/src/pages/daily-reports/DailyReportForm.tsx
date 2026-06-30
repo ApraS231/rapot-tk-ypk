@@ -26,9 +26,10 @@ export const DailyReportForm: React.FC = () => {
 
   const isEdit = !!id;
   const preselectStudentId = searchParams.get('student_id');
+  const preselectDate = searchParams.get('date');
 
   const [studentId, setStudentId] = useState<number | ''>('');
-  const [reportDate, setReportDate] = useState(new Date().toISOString().split('T')[0]);
+  const [reportDate, setReportDate] = useState(preselectDate || new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
   const [behavior, setBehavior] = useState('');
   const [socialInteraction, setSocialInteraction] = useState('');
@@ -135,7 +136,7 @@ export const DailyReportForm: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl mx-auto w-full">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link 
@@ -151,146 +152,105 @@ export const DailyReportForm: React.FC = () => {
       </div>
 
       {/* Golden Ratio Grid layout */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        
-        {/* Left Form: 61.8% */}
-        <div className="w-full lg:w-[61.8%]">
-          <form onSubmit={handleSubmit} className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm space-y-5">
-            
-            {/* Siswa & Tanggal */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                  Pilih Siswa <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <Users className="absolute left-4 top-3 w-4 h-4 text-slate-400 z-10" />
-                  <select
-                    value={studentId}
-                    disabled={isEdit}
-                    onChange={(e) => setStudentId(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
-                  >
-                    <option value="">-- Pilih Siswa Dampingan --</option>
-                    {students.map((student) => (
-                      <option key={student.id} value={student.id}>
-                        {student.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                  Tanggal Laporan <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-4 top-3 w-4 h-4 text-slate-400" />
-                  <input
-                    type="date"
-                    required
-                    value={reportDate}
-                    onChange={(e) => setReportDate(e.target.value)}
-                    className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Aktivitas Belajar */}
+      <div className="w-full">
+        <form onSubmit={handleSubmit} className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm space-y-5">
+          
+          {/* Siswa & Tanggal */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                Aktivitas Belajar & Kegiatan Utama
+                Pilih Siswa <span className="text-rose-500">*</span>
               </label>
-              <textarea
-                placeholder="Deskripsikan apa yang dipelajari hari ini, respons terhadap materi, dan materi yang diselesaikan..."
-                rows={4}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm resize-none"
-              />
+              <div className="relative">
+                <Users className="absolute left-4 top-3 w-4 h-4 text-slate-400 z-10" />
+                <select
+                  value={studentId}
+                  disabled={isEdit}
+                  onChange={(e) => setStudentId(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+                >
+                  <option value="">-- Pilih Siswa Dampingan --</option>
+                  {students.map((student) => (
+                    <option key={student.id} value={student.id}>
+                      {student.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Perilaku (Behavior) */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                Perilaku & Emosi (Behavioral Feed)
+                Tanggal Laporan <span className="text-rose-500">*</span>
               </label>
-              <textarea
-                placeholder="Catat kondisi emosional anak, tantrum (jika ada), kefokusan belajar, atau perilaku repetitif yang muncul..."
-                rows={3}
-                value={behavior}
-                onChange={(e) => setBehavior(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm resize-none"
-              />
-            </div>
-
-            {/* Interaksi Sosial */}
-            <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                Interaksi Sosial
-              </label>
-              <textarea
-                placeholder="Bagaimana hubungan anak hari ini dengan teman sebaya, guru kelas, atau pendamping? Apakah mau berbagi/bermain bersama?..."
-                rows={3}
-                value={socialInteraction}
-                onChange={(e) => setSocialInteraction(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm resize-none"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-xl text-sm shadow-md shadow-primary-500/10 hover:shadow-primary-600/20 transform hover:-translate-y-0.5 transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                <span>{isEdit ? 'Simpan Perubahan' : 'Simpan Laporan'}</span>
-              </button>
-            </div>
-
-          </form>
-        </div>
-
-        {/* Right Instructions Column: 38.2% */}
-        <div className="w-full lg:w-[38.2%] space-y-6">
-          <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-primary-600 border-b border-slate-100 pb-3">
-              <Info className="w-5 h-5 shrink-0" />
-              <h3 className="font-bold text-slate-800 text-sm tracking-wide uppercase">Panduan Penulisan</h3>
-            </div>
-            
-            <div className="space-y-4 text-xs text-slate-500 font-medium leading-relaxed">
-              <div className="flex gap-2.5">
-                <Activity className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                <div>
-                  <h5 className="font-bold text-slate-700 mb-0.5">Aktivitas Belajar</h5>
-                  <span>Deskripsikan kemajuan sensorik-motorik atau kesiapan akademis anak selama di kelas.</span>
-                </div>
-              </div>
-              
-              <div className="flex gap-2.5">
-                <Smile className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                <div>
-                  <h5 className="font-bold text-slate-700 mb-0.5">Perilaku (Behavior)</h5>
-                  <span>Gunakan istilah deskriptif netral (contoh: "menolak kontak mata selama 10 menit" alih-alih "tidak sopan").</span>
-                </div>
-              </div>
-
-              <div className="flex gap-2.5">
-                <Heart className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                <div>
-                  <h5 className="font-bold text-slate-700 mb-0.5">Interaksi Sosial</h5>
-                  <span>Catat respon anak saat diajak berkomunikasi secara interaktif.</span>
-                </div>
+              <div className="relative">
+                <Calendar className="absolute left-4 top-3 w-4 h-4 text-slate-400" />
+                <input
+                  type="date"
+                  required
+                  value={reportDate}
+                  onChange={(e) => setReportDate(e.target.value)}
+                  className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm"
+                />
               </div>
             </div>
           </div>
-        </div>
 
+          {/* Aktivitas Belajar */}
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+              Aktivitas Belajar & Kegiatan Utama
+            </label>
+            <textarea
+              placeholder="Deskripsikan apa yang dipelajari hari ini, respons terhadap materi, dan materi yang diselesaikan..."
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm resize-none"
+            />
+          </div>
+
+          {/* Perilaku (Behavior) */}
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+              Perilaku & Emosi (Behavioral Feed)
+            </label>
+            <textarea
+              placeholder="Catat kondisi emosional anak, tantrum (jika ada), kefokusan belajar, atau perilaku repetitif yang muncul..."
+              rows={3}
+              value={behavior}
+              onChange={(e) => setBehavior(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm resize-none"
+            />
+          </div>
+
+          {/* Interaksi Sosial */}
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+              Interaksi Sosial
+            </label>
+            <textarea
+              placeholder="Bagaimana hubungan anak hari ini dengan teman sebaya, guru kelas, atau pendamping? Apakah mau berbagi/bermain bersama?..."
+              rows={3}
+              value={socialInteraction}
+              onChange={(e) => setSocialInteraction(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-medium text-sm resize-none"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-xl text-sm shadow-md shadow-primary-500/10 hover:shadow-primary-600/20 transform hover:-translate-y-0.5 transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span>{isEdit ? 'Simpan Perubahan' : 'Simpan Laporan'}</span>
+            </button>
+          </div>
+
+        </form>
       </div>
 
     </div>

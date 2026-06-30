@@ -423,7 +423,9 @@ export const UserList: React.FC = () => {
                       className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent font-medium text-sm transition"
                     >
                       <option value="pendamping">Guru Pendamping (Shadow)</option>
-                      <option value="admin">Administrator (BK)</option>
+                      {editingUser?.role === 'admin' && (
+                        <option value="admin">Administrator (BK)</option>
+                      )}
                     </select>
                   </div>
                 </>

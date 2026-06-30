@@ -331,7 +331,7 @@ async def api_student_detail(student_id: int, request: Request, db: Session = De
             {
                 "id": r.id,
                 "date": r.date.isoformat() if r.date else None,
-                "activity": r.activity,
+                "notes": r.notes,
                 "behavior": r.behavior,
                 "social_interaction": r.social_interaction,
             }
@@ -340,11 +340,13 @@ async def api_student_detail(student_id: int, request: Request, db: Session = De
         "assessments": [
             {
                 "id": a.id,
+                "period": a.period,
                 "created_at": a.created_at.isoformat() if a.created_at else None,
                 "motoric": a.motoric,
                 "language": a.language,
-                "social_emotional": a.social_emotional,
+                "social_emotional": a.social,
                 "cognitive": a.cognitive,
+                "independence": a.independence,
                 "summary": a.summary,
             }
             for a in assessments

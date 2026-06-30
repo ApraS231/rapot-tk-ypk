@@ -202,6 +202,16 @@ async def api_report_list(request: Request, db: Session = Depends(get_db), stude
     reports = query.order_by(DailyReport.date.desc()).all()
     students_map = {s.id: s.name for s in db.query(Student).all()}
     
+    # Map gallery images by (student_id, date)
+    from backend.app.models.gallery import Gallery
+    gallery_items = db.query(Gallery).all()
+    gallery_map = {}
+    for g in gallery_items:
+        key = (g.student_id, g.date.isoformat() if g.date else None)
+        if key not in gallery_map:
+            gallery_map[key] = []
+        gallery_map[key].append(g.image_path)
+    
     return [
         {
             "id": r.id,
@@ -211,7 +221,8 @@ async def api_report_list(request: Request, db: Session = Depends(get_db), stude
             "notes": r.notes,
             "behavior": r.behavior,
             "social_interaction": r.social_interaction,
-            "created_by": r.created_by
+            "created_by": r.created_by,
+            "photos": gallery_map.get((r.student_id, r.date.isoformat() if r.date else None), [])
         }
         for r in reports
     ]
