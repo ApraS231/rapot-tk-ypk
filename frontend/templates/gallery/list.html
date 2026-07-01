@@ -8,7 +8,7 @@
   <div class="flex items-center justify-between gap-4 flex-wrap">
     <form method="GET" action="/gallery" class="flex items-center gap-2">
       <select name="student_id" onchange="this.form.submit()"
-        class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white">
+        class="select select-bordered select-sm focus:select-primary bg-white text-xs">
         <option value="">Semua Siswa</option>
         {% for s in students %}
         <option value="{{ s.id }}" {% if filter_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
@@ -16,84 +16,107 @@
       </select>
     </form>
 
-    <!-- Upload Form (collapsible) -->
+    <!-- Upload Form button -->
     {% if user.role != 'admin' %}
     <button onclick="document.getElementById('upload-form').classList.toggle('hidden')"
-      class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium shadow transition hover:-translate-y-0.5">
-      📤 Upload Foto
+      class="btn btn-primary btn-sm text-white shadow flex items-center gap-1.5 cursor-pointer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+      </svg>
+      <span>Upload Foto</span>
     </button>
     {% endif %}
   </div>
 
   <!-- Upload Form -->
-  <div id="upload-form" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-    <h3 class="font-semibold text-slate-700 mb-4">Upload Foto Kegiatan</h3>
-    <form method="POST" action="/gallery/upload" enctype="multipart/form-data" class="space-y-4">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="upload-student">Siswa <span class="text-red-500">*</span></label>
-          <select id="upload-student" name="student_id" required
-            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white">
-            <option value="">— Pilih —</option>
-            {% for s in students %}
-            <option value="{{ s.id }}" {% if filter_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
-            {% endfor %}
-          </select>
+  <div id="upload-form" class="hidden card bg-white shadow-sm border border-slate-100">
+    <div class="card-body p-5">
+      <h3 class="card-title text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span>Upload Foto Kegiatan</span>
+      </h3>
+      <form method="POST" action="/gallery/upload" enctype="multipart/form-data" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="form-control w-full">
+            <label class="label" for="upload-student">
+              <span class="label-text font-semibold text-slate-700 text-xs">Siswa <span class="text-red-500">*</span></span>
+            </label>
+            <select id="upload-student" name="student_id" required
+              class="select select-bordered select-sm w-full focus:select-primary bg-white text-xs">
+              <option value="">— Pilih Siswa —</option>
+              {% for s in students %}
+              <option value="{{ s.id }}" {% if filter_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-control w-full">
+            <label class="label" for="activity_date">
+              <span class="label-text font-semibold text-slate-700 text-xs">Tanggal <span class="text-red-500">*</span></span>
+            </label>
+            <input type="date" id="activity_date" name="activity_date" required
+              class="input input-bordered input-sm w-full focus:input-primary text-xs" />
+          </div>
+          <div class="form-control w-full">
+            <label class="label" for="description">
+              <span class="label-text font-semibold text-slate-700 text-xs">Deskripsi</span>
+            </label>
+            <input type="text" id="description" name="description"
+              placeholder="Nama aktivitas..."
+              class="input input-bordered input-sm w-full focus:input-primary text-xs" />
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="activity_date">Tanggal <span class="text-red-500">*</span></label>
-          <input type="date" id="activity_date" name="activity_date" required
-            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+        <div class="form-control w-full">
+          <label class="label" for="image">
+            <span class="label-text font-semibold text-slate-700 text-xs">Foto <span class="text-red-500">*</span></span>
+          </label>
+          <input type="file" id="image" name="image" accept="image/*" required
+            class="file-input file-input-bordered file-input-primary file-input-sm w-full max-w-md text-xs cursor-pointer" />
         </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="description">Deskripsi</label>
-          <input type="text" id="description" name="description"
-            placeholder="Nama aktivitas..."
-            class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+        <div class="flex gap-2 pt-2">
+          <button type="submit" id="btn-upload-gallery"
+            class="btn btn-primary btn-sm text-white font-semibold flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+            </svg>
+            <span>Upload</span>
+          </button>
+          <button type="button" onclick="document.getElementById('upload-form').classList.add('hidden')"
+            class="btn btn-outline btn-neutral btn-sm font-semibold cursor-pointer">
+            Batal
+          </button>
         </div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="image">Foto <span class="text-red-500">*</span></label>
-        <input type="file" id="image" name="image" accept="image/*" required
-          class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer" />
-      </div>
-      <div class="flex gap-3">
-        <button type="submit" id="btn-upload-gallery"
-          class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl text-sm transition shadow">
-          📤 Upload
-        </button>
-        <button type="button" onclick="document.getElementById('upload-form').classList.add('hidden')"
-          class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">
-          Batal
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 
   <!-- Gallery Grid -->
   {% if items %}
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
     {% for item in items %}
-    <div class="group relative bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-      <div class="aspect-square overflow-hidden bg-slate-100">
+    <div class="card bg-white shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow group relative">
+      <figure class="aspect-square overflow-hidden bg-slate-100 rounded-none">
         <img src="{{ item.image_path }}"
              alt="{{ item.description or 'Foto kegiatan' }}"
              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-      </div>
+      </figure>
       <div class="p-3">
-        <div class="text-xs font-medium text-slate-700 truncate">{{ students_map.get(item.student_id, '—') }}</div>
+        <div class="text-xs font-bold text-slate-700 truncate">{{ students_map.get(item.student_id, '—') }}</div>
         {% if item.description %}
-        <div class="text-xs text-slate-500 truncate mt-0.5">{{ item.description }}</div>
+        <div class="text-xs text-slate-500 truncate mt-0.5 font-medium">{{ item.description }}</div>
         {% endif %}
-        <div class="text-xs text-slate-400 mt-0.5">{{ item.date.strftime('%d %b %Y') }}</div>
+        <div class="text-xs text-slate-400 mt-0.5 font-semibold">{{ item.date.strftime('%d %b %Y') }}</div>
       </div>
       <!-- Delete overlay -->
       {% if user.role != 'admin' %}
       <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <a href="/gallery/{{ item.id }}/delete"
            onclick="return confirm('Hapus foto ini?')"
-           class="w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center justify-center text-xs shadow transition">
-          🗑️
+           class="btn btn-square btn-error btn-xs text-white">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
         </a>
       </div>
       {% endif %}
@@ -101,16 +124,23 @@
     {% endfor %}
   </div>
   {% else %}
-  <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
-    <div class="text-5xl mb-3">📷</div>
-    <h3 class="font-semibold text-slate-700 mb-1">Belum ada foto kegiatan</h3>
-    <p class="text-sm text-slate-400 mb-4">Upload foto untuk mendokumentasikan kegiatan anak</p>
-    {% if user.role != 'admin' %}
-    <button onclick="document.getElementById('upload-form').classList.remove('hidden')"
-      class="inline-block px-4 py-2 bg-primary-600 text-white text-sm rounded-xl hover:bg-primary-700 transition">
-      📤 Upload Foto
-    </button>
-    {% endif %}
+  <div class="card bg-white p-12 text-center shadow-sm border border-slate-100 flex flex-col items-center justify-center">
+    <div class="card-body items-center justify-center">
+      <svg class="w-16 h-16 text-slate-300 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316zM10.5 13.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm5.25 0a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
+      </svg>
+      <h3 class="font-semibold text-slate-700 mb-1 text-lg">Belum ada foto kegiatan</h3>
+      <p class="text-sm text-slate-400 mb-4">Upload foto untuk mendokumentasikan kegiatan anak</p>
+      {% if user.role != 'admin' %}
+      <button onclick="document.getElementById('upload-form').classList.remove('hidden')"
+        class="btn btn-primary btn-sm text-white font-semibold flex items-center gap-1.5 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+        </svg>
+        <span>Upload Foto</span>
+      </button>
+      {% endif %}
+    </div>
   </div>
   {% endif %}
 </div>

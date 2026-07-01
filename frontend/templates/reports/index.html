@@ -3,66 +3,72 @@
 {% block page_title %}Laporan Perkembangan Anak{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-  <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    <div>
-      <h2 class="text-lg font-semibold text-slate-800">Daftar Laporan Siswa</h2>
-      <p class="text-sm text-slate-500">Pilih siswa untuk menghasilkan laporan (dapat dicetak sebagai PDF).</p>
+<div class="card bg-white shadow-sm border border-slate-100">
+  <div class="card-body p-6">
+    <div class="mb-4">
+      <h2 class="card-title text-slate-800 text-lg font-semibold">Daftar Laporan Siswa</h2>
+      <p class="text-xs text-slate-505">Pilih siswa untuk menghasilkan laporan (dapat dicetak sebagai PDF).</p>
     </div>
-  </div>
 
-  <div class="overflow-x-auto">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="bg-slate-50 text-slate-500 text-sm border-b border-slate-100">
-          <th class="py-3 px-4 font-medium rounded-tl-xl">Nama Siswa</th>
-          <th class="py-3 px-4 font-medium">Umur</th>
-          <th class="py-3 px-4 font-medium">Kelas</th>
-          <th class="py-3 px-4 font-medium">Status Raport</th>
-          <th class="py-3 px-4 font-medium rounded-tr-xl w-32 text-center">Aksi</th>
-        </tr>
-      </thead>
-      <tbody class="text-sm text-slate-700 divide-y divide-slate-100">
-        {% for item in students_data %}
-        <tr class="hover:bg-slate-50/70 transition-colors">
-          <td class="py-4 px-4">
-            <div class="font-medium text-slate-800">{{ item.student.name }}</div>
-            <div class="text-xs text-slate-400 mt-0.5">{{ item.student.special_needs or 'Tidak ada data ABK' }}</div>
-          </td>
-          <td class="py-4 px-4">{{ item.student.age }} tahun</td>
-          <td class="py-4 px-4">
-            <span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-medium border border-indigo-100">
-              {{ item.student.class_name or 'Belum ditentukan' }}
-            </span>
-          </td>
-          <td class="py-4 px-4">
-            {% if item.assessments_count > 0 %}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-medium border border-green-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Siap Cetak
-            </span>
-            {% else %}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-medium border border-amber-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Belum ada Raport
-            </span>
-            {% endif %}
-          </td>
-          <td class="py-4 px-4 text-center">
-            <a href="/reports/{{ item.student.id }}" 
-               class="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-xs transition-colors shadow-sm w-full font-medium {% if item.assessments_count == 0 %}opacity-50 cursor-not-allowed pointer-events-none{% endif %}">
-              🖼️ Lihat Laporan
-            </a>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="5" class="py-8 text-center text-slate-400">
-            <div class="text-4xl mb-2">📭</div>
-            <p>Belum ada data siswa.</p>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full text-sm">
+        <thead>
+          <tr>
+            <th>Nama Siswa</th>
+            <th>Umur</th>
+            <th>Kelas</th>
+            <th>Status Raport</th>
+            <th class="w-32 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in students_data %}
+          <tr class="hover:bg-slate-50/70 transition-colors text-slate-700">
+            <td>
+              <div class="font-bold text-slate-800">{{ item.student.name }}</div>
+              <div class="text-xs text-slate-400 mt-0.5 font-semibold">{{ item.student.special_needs or 'Tidak ada data ABK' }}</div>
+            </td>
+            <td class="font-medium">{{ item.student.age }} tahun</td>
+            <td>
+              <span class="badge badge-ghost badge-sm font-bold text-slate-500 text-xs">
+                {{ item.student.class_name or 'Belum ditentukan' }}
+              </span>
+            </td>
+            <td>
+              {% if item.assessments_count > 0 %}
+              <span class="badge badge-success badge-sm font-bold text-white gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-white"></span> Siap Cetak
+              </span>
+              {% else %}
+              <span class="badge badge-warning badge-sm font-bold text-amber-950 gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-700"></span> Belum ada Raport
+              </span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a href="/reports/{{ item.student.id }}" 
+                 class="btn btn-primary btn-sm text-white font-semibold flex items-center justify-center gap-1.5 {% if item.assessments_count == 0 %}btn-disabled opacity-50 cursor-not-allowed pointer-events-none{% endif %} cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                <span>Lihat Laporan</span>
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="py-8 text-center text-slate-400">
+              <svg class="w-12 h-12 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>
+              </svg>
+              <p>Belum ada data siswa.</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}

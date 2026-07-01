@@ -1,71 +1,28 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laporan Perkembangan - {{ student.name }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f1f5f9;
-      color: #334155;
-    }
-    
-    .print-button {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-    
-    .back-button {
-      position: fixed;
-      top: 2rem;
-      left: 2rem;
-    }
-
-    /* Print Specific Styles */
-    @media print {
-      body {
-        background-color: white;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .page-break {
-        page-break-before: always;
-      }
-      .print-container {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-        box-shadow: none;
-      }
-      /* Ensure colors print correctly */
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      @page {
-        margin: 1.5cm;
-      }
-    }
-  </style>
+  <!-- daisyUI CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="/static/css/custom.css" />
 </head>
 <body>
 
   <!-- Controls (Hidden on Print) -->
-  <a href="/reports" class="back-button no-print bg-white text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 shadow-sm transition-colors flex items-center gap-2">
-    <span>←</span> Kembali
+  <a href="/reports" class="back-button no-print btn btn-outline btn-neutral btn-sm flex items-center gap-1.5 font-semibold">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+    </svg>
+    <span>Kembali</span>
   </a>
-  <button onclick="window.print()" class="print-button no-print bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-medium transition-colors flex items-center gap-2 z-50">
+  <button onclick="window.print()" class="print-button no-print btn btn-primary text-white rounded-full font-bold flex items-center gap-2 z-50">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
       <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
     </svg>
-    Cetak PDF
+    <span>Cetak PDF</span>
   </button>
 
   <!-- Report Document -->
@@ -81,22 +38,22 @@
     </div>
 
     <!-- Student Identify -->
-    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-8 flex flex-wrap gap-x-12 gap-y-4 text-sm">
+    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-8 flex flex-wrap gap-x-12 gap-y-4 text-sm font-semibold">
       <div>
         <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Nama Lengkap</div>
         <div class="font-bold text-slate-800 text-lg">{{ student.name }}</div>
       </div>
       <div>
         <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Usia</div>
-        <div class="font-medium text-slate-700 text-lg">{{ student.age }} Tahun</div>
+        <div class="font-bold text-slate-700 text-lg">{{ student.age }} Tahun</div>
       </div>
       <div>
         <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Kelas</div>
-        <div class="font-medium text-slate-700 text-lg">{{ student.class_name or '-' }}</div>
+        <div class="font-bold text-slate-700 text-lg">{{ student.class_name or '-' }}</div>
       </div>
       <div>
         <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">Kekhususan</div>
-        <div class="font-medium text-slate-700 text-lg">{{ student.special_needs or '-' }}</div>
+        <div class="font-bold text-slate-700 text-lg">{{ student.special_needs or '-' }}</div>
       </div>
     </div>
 
@@ -108,20 +65,24 @@
       <!-- Motorik & Bahasa -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <div class="border border-indigo-100 rounded-xl overflow-hidden">
+        <div class="border border-indigo-100 rounded-xl overflow-hidden bg-white">
           <div class="bg-indigo-50 border-b border-indigo-100 px-4 py-3 flex items-center gap-2">
-            <span class="text-indigo-600 text-xl">🏃</span>
+            <svg class="w-5 h-5 text-indigo-650" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
             <h3 class="font-bold text-indigo-900">Perkembangan Motorik</h3>
           </div>
-          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.motoric or 'Belum dievaluasi.' }}</div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-medium">{{ assessment.motoric or 'Belum dievaluasi.' }}</div>
         </div>
 
-        <div class="border border-emerald-100 rounded-xl overflow-hidden">
+        <div class="border border-emerald-100 rounded-xl overflow-hidden bg-white">
           <div class="bg-emerald-50 border-b border-emerald-100 px-4 py-3 flex items-center gap-2">
-            <span class="text-emerald-600 text-xl">🗣️</span>
+            <svg class="w-5 h-5 text-emerald-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
             <h3 class="font-bold text-emerald-900">Bahasa & Komunikasi</h3>
           </div>
-          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.language or 'Belum dievaluasi.' }}</div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-medium">{{ assessment.language or 'Belum dievaluasi.' }}</div>
         </div>
 
       </div>
@@ -129,111 +90,49 @@
       <!-- Sosial & Kognitif -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <div class="border border-amber-100 rounded-xl overflow-hidden">
+        <div class="border border-amber-100 rounded-xl overflow-hidden bg-white">
           <div class="bg-amber-50 border-b border-amber-100 px-4 py-3 flex items-center gap-2">
-            <span class="text-amber-600 text-xl">🤝</span>
+            <svg class="w-5 h-5 text-amber-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
             <h3 class="font-bold text-amber-900">Sosial & Emosional</h3>
           </div>
-          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.social or 'Belum dievaluasi.' }}</div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-medium">{{ assessment.social or 'Belum dievaluasi.' }}</div>
         </div>
 
-        <div class="border border-blue-100 rounded-xl overflow-hidden">
+        <div class="border border-blue-100 rounded-xl overflow-hidden bg-white">
           <div class="bg-blue-50 border-b border-blue-100 px-4 py-3 flex items-center gap-2">
-            <span class="text-blue-600 text-xl">🧩</span>
+            <svg class="w-5 h-5 text-blue-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
             <h3 class="font-bold text-blue-900">Intelektual (Kognitif)</h3>
           </div>
-          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.cognitive or 'Belum dievaluasi.' }}</div>
+          <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-medium">{{ assessment.cognitive or 'Belum dievaluasi.' }}</div>
         </div>
 
       </div>
 
       <!-- Kemandirian (Full Width) -->
-      <div class="border border-amber-200 rounded-xl overflow-hidden">
+      <div class="border border-amber-200 rounded-xl overflow-hidden bg-white">
         <div class="bg-amber-50/50 border-b border-amber-100 px-4 py-3 flex items-center gap-2">
-          <span class="text-amber-500 text-xl">🏠</span>
+          <svg class="w-5 h-5 text-amber-550" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
           <h3 class="font-bold text-slate-800">Perkembangan Kemandirian</h3>
         </div>
-        <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ assessment.independence or 'Belum dievaluasi.' }}</div>
+        <div class="p-4 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-medium">{{ assessment.independence or 'Belum dievaluasi.' }}</div>
       </div>
 
     </div>
 
-    {% if evaluation %}
-    <!-- Quantitative Score Card -->
-    <div class="mt-8 border border-indigo-200 rounded-xl overflow-hidden">
-      <div class="bg-indigo-600 px-4 py-3 flex items-center justify-between text-white">
-        <div class="flex items-center gap-2">
-          <span class="text-xl">📊</span>
-          <h3 class="font-bold">Indeks Hasil Penilaian Kuantitatif BK</h3>
-        </div>
-        <span class="px-2.5 py-0.5 bg-indigo-500 text-white rounded-full text-xs font-semibold">Tanggal: {{ evaluation.date.strftime('%d %b %Y') }}</span>
-      </div>
-      
-      <div class="p-5 bg-indigo-50/30 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-b border-indigo-100">
-        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
-          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Skor Komposit</div>
-          <div class="text-3xl font-black text-slate-800">{{ "%.2f"|format(evaluation.composite_index) }}</div>
-          <div class="text-[10px] text-slate-400 mt-1">Skala 1.00 - 4.00</div>
-        </div>
-        
-        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
-          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Persentase Indeks</div>
-          <div class="text-3xl font-black text-primary-600">{{ evaluation.index_percentage }}%</div>
-          <div class="text-[10px] text-slate-400 mt-1">Skala 0% - 100%</div>
-        </div>
-        
-        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm text-center">
-          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Hasil Predikat</div>
-          <div class="mt-1">
-            <span class="px-3 py-1 rounded-full text-sm font-bold
-              {% if evaluation.predicate == 'BSB' %}bg-green-100 text-green-700
-              {% elif evaluation.predicate == 'BSH' %}bg-blue-100 text-blue-700
-              {% elif evaluation.predicate == 'MB' %}bg-orange-100 text-orange-700
-              {% else %}bg-red-100 text-red-700{% endif %}">
-              {{ evaluation.predicate }}
-            </span>
-          </div>
-          <div class="text-[10px] text-slate-400 mt-2 font-medium">
-            {% if evaluation.predicate == 'BSB' %}Berkembang Sangat Baik
-            {% elif evaluation.predicate == 'BSH' %}Berkembang Sesuai Harapan
-            {% elif evaluation.predicate == 'MB' %}Mulai Berkembang
-            {% else %}Belum Berkembang{% endif %}
-          </div>
-        </div>
-        
-        <div class="bg-white p-4 rounded-xl border border-indigo-50 shadow-sm">
-          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2 text-center">Rincian Nilai Domain</div>
-          <div class="space-y-1 text-xs">
-            <div class="flex justify-between">
-              <span class="text-slate-500">Kognitif:</span>
-              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_cognitive) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">Motorik:</span>
-              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_motoric) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">Bahasa:</span>
-              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_language) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">Sosial:</span>
-              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_social) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-500">Mandiri:</span>
-              <span class="font-bold text-slate-700">{{ "%.2f"|format(evaluation.avg_independence) }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
+
 
     <!-- Summary (Full width) -->
     <div class="mt-8 border border-purple-100 rounded-xl overflow-hidden">
       <div class="bg-purple-50 border-b border-purple-100 px-4 py-3 flex items-center gap-2">
-        <span class="text-purple-600 text-xl">⭐</span>
+        <svg class="w-5 h-5 text-purple-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.195-.558 1.04-.558 1.235 0l2.404 6.878a1 1 0 00.95.69h7.228c.597 0 .846.77.362 1.127l-5.849 4.316a1 1 0 00-.364 1.118l2.25 6.42c.197.564-.446 1.033-.941.696L12 20.25a1 1 0 00-1.057 0l-5.503 3.844c-.495.337-1.138-.132-.942-.696l2.249-6.42a1 1 0 00-.364-1.118L.54 12.194c-.484-.358-.235-1.127.362-1.127h7.228a1 1 0 00.95-.69l2.404-6.878z"/>
+        </svg>
         <h3 class="font-bold text-purple-900">Kesimpulan & Rekomendasi</h3>
       </div>
       <div class="p-5 text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">{{ assessment.summary or 'Belum ada kesimpulan.' }}</div>

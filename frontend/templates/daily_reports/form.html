@@ -6,20 +6,25 @@
 <div class="max-w-2xl mx-auto">
   <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
     <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-xl">📝</div>
+      <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
       <div>
         <h2 class="font-semibold text-slate-800">{% if report %}Edit Catatan Harian{% else %}Input Perkembangan Harian{% endif %}</h2>
-        <p class="text-xs text-slate-400">Catat perkembangan, perilaku, dan interaksi sosial anak</p>
+        <p class="text-xs text-slate-400">Catat perkembangan, perilaku, and interaksi sosial anak</p>
       </div>
     </div>
 
     <form method="POST" action="{% if report %}/daily-reports/{{ report.id }}/edit{% else %}/daily-reports/add{% endif %}" class="space-y-5">
-
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="student_id">Siswa <span class="text-red-500">*</span></label>
+        <div class="form-control w-full">
+          <label class="label" for="student_id">
+            <span class="label-text font-semibold text-slate-700">Siswa <span class="text-red-500">*</span></span>
+          </label>
           <select id="student_id" name="student_id" required
-            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white transition">
+            class="select select-bordered w-full focus:select-primary text-sm bg-white">
             <option value="">— Pilih Siswa —</option>
             {% for s in students %}
             <option value="{{ s.id }}"
@@ -31,41 +36,74 @@
           </select>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1.5" for="report_date">Tanggal <span class="text-red-500">*</span></label>
+        <div class="form-control w-full">
+          <label class="label" for="report_date">
+            <span class="label-text font-semibold text-slate-700">Tanggal <span class="text-red-500">*</span></span>
+          </label>
           <input type="date" id="report_date" name="report_date" required
-            value="{{ report.date.isoformat() if report else '' }}"
-            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+            value="{{ report.date.isoformat() if report else (preselect_date if preselect_date else '') }}"
+            class="input input-bordered w-full focus:input-primary text-sm" />
         </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="notes">📌 Catatan Umum</label>
+      <div class="form-control w-full">
+        <label class="label" for="notes">
+          <span class="label-text font-semibold text-slate-700 flex items-center gap-1">
+            <svg class="w-4 h-4 text-slate-505" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            </svg>
+            <span>Catatan Umum</span>
+          </span>
+        </label>
         <textarea id="notes" name="notes" rows="3"
           placeholder="Deskripsikan perkembangan umum anak hari ini..."
-          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition resize-none">{{ report.notes or '' if report else '' }}</textarea>
+          class="textarea textarea-bordered w-full focus:textarea-primary text-sm resize-none">{{ report.notes or '' if report else '' }}</textarea>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="behavior">🧠 Perilaku</label>
+      <div class="form-control w-full">
+        <label class="label" for="behavior">
+          <span class="label-text font-semibold text-slate-700 flex items-center gap-1">
+            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+            <span>Perilaku</span>
+          </span>
+        </label>
         <textarea id="behavior" name="behavior" rows="3"
           placeholder="Bagaimana perilaku anak hari ini? Respons terhadap pembelajaran..."
-          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition resize-none">{{ report.behavior or '' if report else '' }}</textarea>
+          class="textarea textarea-bordered w-full focus:textarea-primary text-sm resize-none">{{ report.behavior or '' if report else '' }}</textarea>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="social_interaction">🤝 Interaksi Sosial</label>
+      <div class="form-control w-full">
+        <label class="label" for="social_interaction">
+          <span class="label-text font-semibold text-slate-700 flex items-center gap-1">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span>Interaksi Sosial</span>
+          </span>
+        </label>
         <textarea id="social_interaction" name="social_interaction" rows="3"
           placeholder="Bagaimana interaksi anak dengan teman dan guru?"
-          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition resize-none">{{ report.social_interaction or '' if report else '' }}</textarea>
+          class="textarea textarea-bordered w-full focus:textarea-primary text-sm resize-none">{{ report.social_interaction or '' if report else '' }}</textarea>
       </div>
 
-      <div class="flex items-center gap-3 pt-2">
+      <div class="flex items-center gap-3 pt-4">
         <button type="submit" id="btn-save-report"
-          class="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl text-sm transition shadow">
-          {% if report %}💾 Simpan Perubahan{% else %}✅ Simpan Catatan{% endif %}
+          class="btn btn-primary flex-1 text-white font-semibold flex items-center justify-center gap-1.5 cursor-pointer">
+          {% if report %}
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+          </svg>
+          <span>Simpan Perubahan</span>
+          {% else %}
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Simpan Catatan</span>
+          {% endif %}
         </button>
-        <a href="/daily-reports" class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">Batal</a>
+        <a href="/daily-reports" class="btn btn-outline btn-neutral font-medium">Batal</a>
       </div>
     </form>
   </div>

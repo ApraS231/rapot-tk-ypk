@@ -14,7 +14,11 @@
   <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-6">
     <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-100 pb-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-xl">👦</div>
+        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+          </svg>
+        </div>
         <div>
           <h2 class="font-semibold text-slate-800">Analisis Progres Individual</h2>
           <p class="text-xs text-slate-400">Pilih siswa untuk melihat grafik tren dan riwayat perkembangan</p>
@@ -24,7 +28,7 @@
       <!-- Selector Form -->
       <form method="GET" action="/evaluations/rekap" class="flex items-center gap-2">
         <select name="student_id" onchange="this.form.submit()"
-          class="px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white font-medium text-slate-700 transition">
+          class="select select-bordered select-sm focus:select-primary bg-white text-xs font-semibold text-slate-700">
           {% for s in students %}
           <option value="{{ s.id }}" {% if selected_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
           {% endfor %}
@@ -34,22 +38,22 @@
 
     {% if selected_student and history %}
     <!-- Info bar -->
-    <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between flex-wrap gap-4">
+    <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between flex-wrap gap-4 text-sm font-semibold">
       <div>
-        <span class="text-xs text-slate-400 font-semibold uppercase block">Siswa Terpilih</span>
-        <strong class="text-slate-800 text-base">{{ selected_student.name }}</strong>
+        <span class="text-xs text-slate-400 font-bold uppercase block">Siswa Terpilih</span>
+        <strong class="text-slate-800 text-base font-bold">{{ selected_student.name }}</strong>
       </div>
       <div>
-        <span class="text-xs text-slate-400 font-semibold uppercase block">Kelas</span>
-        <span class="text-slate-700 font-semibold">{{ selected_student.class_name or '—' }}</span>
+        <span class="text-xs text-slate-400 font-bold uppercase block">Kelas</span>
+        <span class="text-slate-700 font-bold">{{ selected_student.class_name or '—' }}</span>
       </div>
       <div>
-        <span class="text-xs text-slate-400 font-semibold uppercase block">Diagnosa</span>
-        <span class="px-2 py-0.5 bg-orange-50 text-orange-700 rounded-lg text-xs font-semibold">{{ selected_student.special_needs or '—' }}</span>
+        <span class="text-xs text-slate-400 font-bold uppercase block">Diagnosa</span>
+        <span class="badge badge-warning text-xs font-bold text-amber-950">{{ selected_student.special_needs or '—' }}</span>
       </div>
       <div>
-        <span class="text-xs text-slate-400 font-semibold uppercase block">Penilaian Terakhir</span>
-        <span class="text-slate-700 font-medium">{{ history[0].date.strftime('%d %b %Y') }}</span>
+        <span class="text-xs text-slate-400 font-bold uppercase block">Penilaian Terakhir</span>
+        <span class="text-slate-700 font-bold">{{ history[0].date.strftime('%d %b %Y') }}</span>
       </div>
     </div>
 
@@ -57,7 +61,12 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Domain Bar Chart -->
       <div class="p-4 border border-slate-100 rounded-xl bg-slate-50/50">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">📊 Profil Perkembangan per Domain</h3>
+        <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          <span>Profil Perkembangan per Domain</span>
+        </h3>
         <div class="h-64 relative">
           <canvas id="domainBarChart"></canvas>
         </div>
@@ -65,221 +74,90 @@
       
       <!-- Composite Line Chart -->
       <div class="p-4 border border-slate-100 rounded-xl bg-slate-50/50">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">📈 Tren Indeks Komposit Perkembangan</h3>
+        <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+          </svg>
+          <span>Tren Indeks Komposit Perkembangan</span>
+        </h3>
         <div class="h-64 relative">
           <canvas id="compositeLineChart"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Comparisons and Trends -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Period comparisons (naik/turun) -->
-      <div class="md:col-span-2 p-5 border border-slate-100 rounded-xl bg-white space-y-4">
-        <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">🔄 Perbandingan Domain Antar Periode</h3>
-        
-        {% if comparison_trend %}
-        <div class="divide-y divide-slate-100">
-          {% for t in comparison_trend %}
-          <div class="py-2.5 flex items-center justify-between gap-4">
-            <div>
-              <span class="text-sm font-medium text-slate-700">{{ t.name }}</span>
-              <span class="text-xs text-slate-400 block">Sebelumnya: {{ t.prev }} &rarr; Terbaru: {{ t.curr }}</span>
-            </div>
-            
-            <div class="flex items-center gap-2">
-              {% if t.status == 'naik' %}
-              <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-green-50 text-green-700 flex items-center gap-0.5">
-                ▲ +{{ t.diff }} (Meningkat)
-              </span>
-              {% elif t.status == 'turun' %}
-              <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-700 flex items-center gap-0.5">
-                ▼ -{{ t.diff }} (Menurun)
-              </span>
-              {% else %}
-              <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
-                ■ 0.0 (Stabil)
-              </span>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        <div class="text-center py-6 text-slate-400 text-sm">
-          💡 Butuh minimal 2 kali penilaian untuk membandingkan perbedaan antar periode.
-        </div>
-        {% endif %}
-      </div>
 
-      <!-- Quick Metrics last scorecard -->
-      <div class="p-5 border border-slate-100 rounded-xl bg-gradient-to-br from-primary-50 to-indigo-50 flex flex-col justify-between">
-        <div>
-          <h3 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-2">Penilaian Terkini</h3>
-          <div class="text-5xl font-black text-slate-800 leading-none mb-1">
-            {{ "%.2f"|format(history[0].composite_index) }}
-          </div>
-          <div class="text-xs text-slate-400 font-semibold mb-3">Dari skala maks 4.00</div>
-          
-          <div class="text-sm font-medium text-slate-600 mb-1">Persentase Indeks: <span class="text-primary-600 font-bold">{{ history[0].index_percentage }}%</span></div>
-          <div class="text-sm font-medium text-slate-600">Predikat Akhir: 
-            <span class="px-2 py-0.5 rounded-md text-xs font-bold bg-indigo-100 text-indigo-700">
-              {{ history[0].predicate }}
-            </span>
-          </div>
-        </div>
-        
-        <div class="pt-4 border-t border-indigo-100/50 text-xs text-slate-400 italic">
-          Kalkulasi otomatis menggunakan bobot: Kognitif 25%, Motorik 25%, Bahasa 20%, Sosial 15%, Kemandirian 15%.
-        </div>
-      </div>
-    </div>
 
     <!-- History Log Table -->
-    <div class="border border-slate-100 rounded-xl overflow-hidden bg-white">
-      <div class="px-4 py-3 bg-slate-50 border-b border-slate-100 font-semibold text-sm text-slate-700">
-        📜 Riwayat Penilaian Kuantitatif Siswa
+    <div class="card bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+      <div class="px-4 py-3 bg-slate-50 border-b border-slate-100 font-semibold text-sm text-slate-700 flex items-center gap-1.5">
+        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span>Riwayat Penilaian Kuantitatif Siswa</span>
       </div>
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="bg-slate-50/50 text-slate-500 text-left text-xs border-b border-slate-100">
-            <th class="px-4 py-2 font-semibold">Tanggal</th>
-            <th class="px-4 py-2 font-semibold text-center">Kognitif</th>
-            <th class="px-4 py-2 font-semibold text-center">Motorik</th>
-            <th class="px-4 py-2 font-semibold text-center">Bahasa</th>
-            <th class="px-4 py-2 font-semibold text-center">Sosial</th>
-            <th class="px-4 py-2 font-semibold text-center">Mandiri</th>
-            <th class="px-4 py-2 font-semibold text-center">Komposit</th>
-            <th class="px-4 py-2 font-semibold text-center">Persentase</th>
-            <th class="px-4 py-2 font-semibold text-center">Predikat</th>
-            <th class="px-4 py-2 font-semibold text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          {% for ev in history %}
-          <tr class="hover:bg-slate-50/50 transition-colors text-xs text-slate-600">
-            <td class="px-4 py-2.5 font-medium text-slate-800">{{ ev.date.strftime('%d %b %Y') }}</td>
-            <td class="px-4 py-2.5 text-center">{{ "%.2f"|format(ev.avg_cognitive) }}</td>
-            <td class="px-4 py-2.5 text-center">{{ "%.2f"|format(ev.avg_motoric) }}</td>
-            <td class="px-4 py-2.5 text-center">{{ "%.2f"|format(ev.avg_language) }}</td>
-            <td class="px-4 py-2.5 text-center">{{ "%.2f"|format(ev.avg_social) }}</td>
-            <td class="px-4 py-2.5 text-center">{{ "%.2f"|format(ev.avg_independence) }}</td>
-            <td class="px-4 py-2.5 text-center font-bold text-slate-800">{{ "%.2f"|format(ev.composite_index) }}</td>
-            <td class="px-4 py-2.5 text-center font-bold text-primary-600">{{ ev.index_percentage }}%</td>
-            <td class="px-4 py-2.5 text-center font-bold">
-              <span class="px-2 py-0.5 rounded text-[10px]
-                {% if ev.predicate == 'BSB' %}bg-green-100 text-green-700
-                {% elif ev.predicate == 'BSH' %}bg-blue-100 text-blue-700
-                {% elif ev.predicate == 'MB' %}bg-orange-100 text-orange-700
-                {% else %}bg-red-100 text-red-700{% endif %}">
-                {{ ev.predicate }}
-              </span>
-            </td>
-            <td class="px-4 py-2.5 text-right">
-              <a href="/evaluations/{{ ev.id }}/delete" onclick="return confirm('Hapus penilaian ini?')"
-                 class="text-red-500 hover:text-red-700 hover:underline">Hapus</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full text-sm">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th class="text-center">Kognitif</th>
+              <th class="text-center">Motorik</th>
+              <th class="text-center">Bahasa</th>
+              <th class="text-center">Sosial</th>
+              <th class="text-center">Mandiri</th>
+              <th class="text-center">Komposit</th>
+              <th class="text-center">Persentase</th>
+              <th class="text-center">Predikat</th>
+              <th class="text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ev in history %}
+            <tr class="hover:bg-slate-50/50 transition-colors text-xs text-slate-600">
+              <td class="font-bold text-slate-800">{{ ev.date.strftime('%d %b %Y') }}</td>
+              <td class="text-center font-medium">{{ "%.2f"|format(ev.avg_cognitive) }}</td>
+              <td class="text-center font-medium">{{ "%.2f"|format(ev.avg_motoric) }}</td>
+              <td class="text-center font-medium">{{ "%.2f"|format(ev.avg_language) }}</td>
+              <td class="text-center font-medium">{{ "%.2f"|format(ev.avg_social) }}</td>
+              <td class="text-center font-medium">{{ "%.2f"|format(ev.avg_independence) }}</td>
+              <td class="text-center font-extrabold text-slate-800">{{ "%.2f"|format(ev.composite_index) }}</td>
+              <td class="text-center font-extrabold text-primary-600">{{ ev.index_percentage }}%</td>
+              <td class="text-center">
+                <span class="badge badge-sm font-bold text-white
+                  {% if ev.predicate == 'BSB' %}badge-success
+                  {% elif ev.predicate == 'BSH' %}badge-info
+                  {% elif ev.predicate == 'MB' %}badge-warning text-amber-950
+                  {% else %}badge-error{% endif %}">
+                  {{ ev.predicate }}
+                </span>
+              </td>
+              <td class="text-right">
+                <a href="/evaluations/{{ ev.id }}/delete" onclick="return confirm('Hapus penilaian ini?')"
+                   class="btn btn-xs btn-ghost text-red-500 font-semibold">Hapus</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
 
     {% else %}
-    <div class="text-center py-12 text-slate-400">
-      <div class="text-5xl mb-3">📊</div>
-      <p class="text-sm">Belum ada data riwayat penilaian kuantitatif untuk siswa ini.</p>
-      <a href="/evaluations/add?student_id={{ selected_student_id }}" class="mt-3 inline-block px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-semibold shadow hover:bg-primary-700 transition">Mulai Skoring Indikator</a>
+    <div class="card bg-white p-12 text-center border border-slate-100 flex flex-col items-center justify-center">
+      <div class="card-body items-center justify-center">
+        <svg class="w-12 h-12 text-slate-300 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <h3 class="font-semibold text-slate-700 text-lg mb-1">Belum ada data penilaian kuantitatif</h3>
+        <p class="text-sm text-slate-400 mb-4">Siswa ini belum memiliki riwayat skoring indikator.</p>
+        <a href="/evaluations/add?student_id={{ selected_student_id }}" class="btn btn-primary btn-sm text-white font-semibold">Mulai Skoring Indikator</a>
+      </div>
     </div>
     {% endif %}
   </div>
 
-  <!-- ── Section 2: Tabel Komparasi Seluruh Siswa ────────────────────────── -->
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
-    <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
-      <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-xl">👥</div>
-      <div>
-        <h2 class="font-semibold text-slate-800">Matriks Perbandingan Predikat Antar Siswa</h2>
-        <p class="text-xs text-slate-400">Tabel komparasi predikat perkembangan seluruh siswa per domain</p>
-      </div>
-    </div>
 
-    <div class="overflow-x-auto border border-slate-100 rounded-xl">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="bg-slate-50 text-slate-600 text-left text-xs font-semibold border-b border-slate-100">
-            <th class="px-5 py-3">Nama Siswa</th>
-            <th class="px-5 py-3">Kelas</th>
-            <th class="px-5 py-3 text-center">Kognitif</th>
-            <th class="px-5 py-3 text-center">Motorik</th>
-            <th class="px-5 py-3 text-center">Bahasa</th>
-            <th class="px-5 py-3 text-center">Sosial</th>
-            <th class="px-5 py-3 text-center">Kemandirian</th>
-            <th class="px-5 py-3 text-center bg-slate-100/50">Skor Komposit</th>
-            <th class="px-5 py-3 text-center bg-slate-100/50">Hasil Predikat</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          {% for item in comparison_data %}
-          <tr class="hover:bg-slate-50 transition-colors">
-            <td class="px-5 py-3.5 font-medium text-slate-800">{{ item.student.name }}</td>
-            <td class="px-5 py-3.5 text-slate-500 font-semibold text-xs">{{ item.student.class_name or '—' }}</td>
-            
-            {% if item.latest_evaluation %}
-              {% set ev = item.latest_evaluation %}
-              <!-- Cognitive Predicate -->
-              <td class="px-5 py-3.5 text-center">
-                <span class="font-bold text-xs {% if ev.avg_cognitive >= 3.5 %}text-green-600{% elif ev.avg_cognitive >= 2.5 %}text-blue-600{% elif ev.avg_cognitive >= 1.5 %}text-orange-600{% else %}text-red-600{% endif %}">
-                  {% if ev.avg_cognitive >= 3.5 %}BSB{% elif ev.avg_cognitive >= 2.5 %}BSH{% elif ev.avg_cognitive >= 1.5 %}MB{% else %}BB{% endif %}
-                </span>
-              </td>
-              <!-- Motoric Predicate -->
-              <td class="px-5 py-3.5 text-center">
-                <span class="font-bold text-xs {% if ev.avg_motoric >= 3.5 %}text-green-600{% elif ev.avg_motoric >= 2.5 %}text-blue-600{% elif ev.avg_motoric >= 1.5 %}text-orange-600{% else %}text-red-600{% endif %}">
-                  {% if ev.avg_motoric >= 3.5 %}BSB{% elif ev.avg_motoric >= 2.5 %}BSH{% elif ev.avg_motoric >= 1.5 %}MB{% else %}BB{% endif %}
-                </span>
-              </td>
-              <!-- Language Predicate -->
-              <td class="px-5 py-3.5 text-center">
-                <span class="font-bold text-xs {% if ev.avg_language >= 3.5 %}text-green-600{% elif ev.avg_language >= 2.5 %}text-blue-600{% elif ev.avg_language >= 1.5 %}text-orange-600{% else %}text-red-600{% endif %}">
-                  {% if ev.avg_language >= 3.5 %}BSB{% elif ev.avg_language >= 2.5 %}BSH{% elif ev.avg_language >= 1.5 %}MB{% else %}BB{% endif %}
-                </span>
-              </td>
-              <!-- Social Predicate -->
-              <td class="px-5 py-3.5 text-center">
-                <span class="font-bold text-xs {% if ev.avg_social >= 3.5 %}text-green-600{% elif ev.avg_social >= 2.5 %}text-blue-600{% elif ev.avg_social >= 1.5 %}text-orange-600{% else %}text-red-600{% endif %}">
-                  {% if ev.avg_social >= 3.5 %}BSB{% elif ev.avg_social >= 2.5 %}BSH{% elif ev.avg_social >= 1.5 %}MB{% else %}BB{% endif %}
-                </span>
-              </td>
-              <!-- Independence Predicate -->
-              <td class="px-5 py-3.5 text-center">
-                <span class="font-bold text-xs {% if ev.avg_independence >= 3.5 %}text-green-600{% elif ev.avg_independence >= 2.5 %}text-blue-600{% elif ev.avg_independence >= 1.5 %}text-orange-600{% else %}text-red-600{% endif %}">
-                  {% if ev.avg_independence >= 3.5 %}BSB{% elif ev.avg_independence >= 2.5 %}BSH{% elif ev.avg_independence >= 1.5 %}MB{% else %}BB{% endif %}
-                </span>
-              </td>
-              
-              <!-- Composite & Final Predicate -->
-              <td class="px-5 py-3.5 text-center bg-slate-50/50 font-black text-slate-800">
-                {{ "%.2f"|format(ev.composite_index) }}
-              </td>
-              <td class="px-5 py-3.5 text-center bg-slate-50/50">
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold
-                  {% if ev.predicate == 'BSB' %}bg-green-100 text-green-700
-                  {% elif ev.predicate == 'BSH' %}bg-blue-100 text-blue-700
-                  {% elif ev.predicate == 'MB' %}bg-orange-100 text-orange-700
-                  {% else %}bg-red-100 text-red-700{% endif %}">
-                  {{ ev.predicate }}
-                </span>
-              </td>
-            {% else %}
-              <td colspan="7" class="px-5 py-3.5 text-center text-slate-400 italic text-xs">Belum dinilai</td>
-            {% endif %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
 
 </div>
 

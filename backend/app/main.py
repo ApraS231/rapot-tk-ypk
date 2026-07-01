@@ -65,41 +65,6 @@ app.add_middleware(
 # ── Static files ───────────────────────────────────────────────────────────────
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-# ── React SPA & Fallback Middleware ───────────────────────────────────────────
-from starlette.middleware.base import BaseHTTPMiddleware
-from fastapi.responses import FileResponse
-
-REACT_DIST_DIR = os.path.join(BASE_DIR, "frontend-react", "dist")
-
-class ReactSPAMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        if request.method == "GET":
-            path = request.url.path
-            
-            # Allow backend static files
-            if path.startswith("/static"):
-                return await call_next(request)
-                
-            # Allow backend REST API endpoints
-            if "/api/" in path or path.startswith("/api"):
-                return await call_next(request)
-                
-            # If React build output exists, serve it
-            if os.path.exists(REACT_DIST_DIR):
-                react_index = os.path.join(REACT_DIST_DIR, "index.html")
-                if os.path.exists(react_index):
-                    # Check if the requested path is a file in the dist directory (e.g. assets, favicon)
-                    file_path = os.path.join(REACT_DIST_DIR, path.lstrip("/"))
-                    if os.path.isfile(file_path):
-                        return FileResponse(file_path)
-                    
-                    # Fallback to index.html for React Router paths
-                    return FileResponse(react_index)
-                    
-        return await call_next(request)
-
-app.add_middleware(ReactSPAMiddleware)
-
 # ── Include routers ────────────────────────────────────────────────────────────
 app.include_router(auth.router)
 app.include_router(students.router)

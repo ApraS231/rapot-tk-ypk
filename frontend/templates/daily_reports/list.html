@@ -1,14 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Perkembangan Harian — E-Raport TK ABK{% endblock %}
+{% block head %}
+<!-- FullCalendar 6 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<style>
+  {% if user.role == 'pendamping' %}
+  .fc-daygrid-day {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .fc-daygrid-day:hover {
+    background-color: rgba(79, 70, 229, 0.04) !important;
+  }
+  {% endif %}
+</style>
+{% endblock %}
 {% block page_title %}Perkembangan Harian{% endblock %}
 
 {% block content %}
 <div class="space-y-5">
-  <!-- Header actions -->
-  <div class="flex items-center justify-between gap-4 flex-wrap">
+  <!-- Header actions -->  <div class="flex items-center justify-between gap-4 flex-wrap">
     <form method="GET" action="/daily-reports" class="flex items-center gap-2">
       <select name="student_id" onchange="this.form.submit()"
-        class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white">
+        class="select select-bordered select-sm focus:select-primary bg-white text-xs">
         <option value="">Semua Siswa</option>
         {% for s in students %}
         <option value="{{ s.id }}" {% if filter_student_id == s.id %}selected{% endif %}>{{ s.name }}</option>
@@ -17,66 +31,239 @@
     </form>
     {% if user.role != 'admin' %}
     <a href="/daily-reports/add" id="btn-add-report"
-       class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium shadow transition hover:-translate-y-0.5">
-      + Tambah Catatan
+       class="btn btn-primary btn-sm text-white shadow flex items-center gap-1.5 cursor-pointer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7-7H5"/>
+      </svg>
+      <span>Tambah Catatan</span>
     </a>
     {% endif %}
   </div>
 
-  {% if reports %}
+  {% if not reports %}
+  <!-- Empty State -->
+  <div class="card bg-white p-12 text-center shadow-sm border border-slate-100 flex flex-col items-center justify-center">
+    <div class="card-body items-center justify-center">
+      <svg class="w-12 h-12 text-slate-300 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>
+      </svg>
+      <h3 class="font-semibold text-slate-700 mb-1 text-lg">Belum ada catatan perkembangan</h3>
+      <p class="text-sm text-slate-400 mb-4 font-semibold">Mulai catat perkembangan harian siswa</p>
+      {% if user.role != 'admin' %}
+      <a href="/daily-reports/add" class="btn btn-primary btn-sm text-white font-semibold">+ Tambah Catatan</a>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+
+  {% if user.role == 'admin' %}
+  <!-- Admin View: Accordion -->
   <div class="space-y-3">
     {% for r in reports %}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 hover:shadow-md transition-shadow">
-      <div class="flex items-start justify-between gap-4 flex-wrap">
+    <div class="collapse collapse-arrow bg-white shadow-sm border border-slate-100 rounded-xl hover:shadow-md transition-all duration-300">
+      <input type="radio" name="report-accordion" {% if loop.first %}checked="checked"{% endif %} /> 
+      <div class="collapse-title p-5 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-lg flex-shrink-0">📝</div>
+          <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
           <div>
-            <div class="font-semibold text-slate-800">{{ students_map.get(r.student_id, 'Siswa') }}</div>
-            <div class="text-xs text-slate-400">{{ r.date.strftime('%A, %d %B %Y') }}</div>
+            <div class="font-bold text-slate-800">{{ students_map.get(r.student_id, 'Siswa') }}</div>
+            <div class="text-xs text-slate-400 font-semibold">{{ r.date.strftime('%A, %d %B %Y') }}</div>
           </div>
         </div>
-        {% if user.role != 'admin' %}
-        <div class="flex items-center gap-2">
-          <a href="/daily-reports/{{ r.id }}/edit" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200 transition">✏️ Edit</a>
-          <a href="/daily-reports/{{ r.id }}/delete"
-             onclick="return confirm('Hapus catatan ini?')"
-             class="px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 rounded-lg border border-red-100 transition">🗑️ Hapus</a>
-        </div>
-        {% endif %}
       </div>
-
-      <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {% if r.notes %}
-        <div class="p-3 bg-slate-50 rounded-xl">
-          <div class="text-xs font-medium text-slate-500 mb-1">📌 Catatan</div>
-          <p class="text-sm text-slate-700">{{ r.notes }}</p>
+      <div class="collapse-content px-5 pb-5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          {% if r.notes %}
+          <div class="p-3 bg-slate-50 rounded-xl">
+            <div class="text-xs font-semibold text-slate-505 mb-1.5 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              </svg>
+              <span>Catatan</span>
+            </div>
+            <p class="text-sm text-slate-600 leading-relaxed font-medium">{{ r.notes }}</p>
+          </div>
+          {% endif %}
+          {% if r.behavior %}
+          <div class="p-3 bg-orange-50/60 rounded-xl">
+            <div class="text-xs font-semibold text-orange-700 mb-1.5 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-orange-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+              <span>Perilaku</span>
+            </div>
+            <p class="text-sm text-slate-700 leading-relaxed font-medium">{{ r.behavior }}</p>
+          </div>
+          {% endif %}
+          {% if r.social_interaction %}
+          <div class="p-3 bg-blue-50/60 rounded-xl">
+            <div class="text-xs font-semibold text-blue-700 mb-1.5 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-blue-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              <span>Interaksi Sosial</span>
+            </div>
+            <p class="text-sm text-slate-700 leading-relaxed font-medium">{{ r.social_interaction }}</p>
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if r.behavior %}
-        <div class="p-3 bg-orange-50 rounded-xl">
-          <div class="text-xs font-medium text-orange-600 mb-1">🧠 Perilaku</div>
-          <p class="text-sm text-slate-700">{{ r.behavior }}</p>
-        </div>
-        {% endif %}
-        {% if r.social_interaction %}
-        <div class="p-3 bg-blue-50 rounded-xl">
-          <div class="text-xs font-medium text-blue-600 mb-1">🤝 Interaksi Sosial</div>
-          <p class="text-sm text-slate-700">{{ r.social_interaction }}</p>
-        </div>
-        {% endif %}
       </div>
     </div>
     {% endfor %}
   </div>
+
   {% else %}
-  <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
-    <div class="text-5xl mb-3">📭</div>
-    <h3 class="font-semibold text-slate-700 mb-1">Belum ada catatan perkembangan</h3>
-    <p class="text-sm text-slate-400 mb-4">Mulai catat perkembangan harian siswa</p>
-    {% if user.role != 'admin' %}
-    <a href="/daily-reports/add" class="inline-block px-4 py-2 bg-primary-600 text-white text-sm rounded-xl hover:bg-primary-700 transition">+ Tambah Catatan</a>
-    {% endif %}
+  <!-- Pendamping View: Calendar -->
+  <div class="card bg-white shadow-sm border border-slate-100 p-6">
+    <div id="calendar"></div>
   </div>
+
+  <!-- daisyUI Modal for calendar event detail -->
+  <dialog id="report_detail_modal" class="modal">
+    <div class="modal-box bg-white border border-slate-100 max-w-md">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-slate-800 text-base mb-1" id="modal-student-name">Nama Siswa</h3>
+      <p class="text-xs text-slate-400 font-semibold mb-4" id="modal-date">Tanggal</p>
+      
+      <div class="space-y-4">
+        <!-- Notes -->
+        <div id="modal-notes-section" class="p-3 bg-slate-50 rounded-xl">
+          <div class="text-xs font-semibold text-slate-505 mb-1.5 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            </svg>
+            <span>Catatan</span>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed font-medium" id="modal-notes"></p>
+        </div>
+
+        <!-- Behavior -->
+        <div id="modal-behavior-section" class="p-3 bg-orange-50/60 rounded-xl">
+          <div class="text-xs font-semibold text-orange-700 mb-1.5 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-orange-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+            <span>Perilaku</span>
+          </div>
+          <p class="text-sm text-slate-700 leading-relaxed font-medium" id="modal-behavior"></p>
+        </div>
+
+        <!-- Social Interaction -->
+        <div id="modal-social-section" class="p-3 bg-blue-50/60 rounded-xl">
+          <div class="text-xs font-semibold text-blue-700 mb-1.5 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-blue-650" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span>Interaksi Sosial</span>
+          </div>
+          <p class="text-sm text-slate-700 leading-relaxed font-medium" id="modal-social"></p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2 mt-6 justify-end">
+        <a href="" id="modal-edit-btn" class="btn btn-sm btn-ghost text-slate-600 font-semibold flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          <span>Edit</span>
+        </a>
+        <a href="" id="modal-delete-btn" onclick="return confirm('Hapus catatan ini?')" class="btn btn-sm btn-ghost text-red-500 font-semibold flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          <span>Hapus</span>
+        </a>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const calendarEl = document.getElementById('calendar');
+      const eventsData = [
+        {% for r in reports %}
+        {
+          id: "{{ r.id }}",
+          title: "{{ students_map.get(r.student_id, 'Siswa') }}",
+          start: "{{ r.date.strftime('%Y-%m-%d') }}",
+          extendedProps: {
+            notes: {{ r.notes|tojson|safe if r.notes else '""' }},
+            behavior: {{ r.behavior|tojson|safe if r.behavior else '""' }},
+            social: {{ r.social_interaction|tojson|safe if r.social_interaction else '""' }},
+            studentName: "{{ students_map.get(r.student_id, 'Siswa') }}",
+            dateFormatted: "{{ r.date.strftime('%A, %d %B %Y') }}"
+          }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ];
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'id',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: ''
+        },
+        events: eventsData,
+        {% if user.role == 'pendamping' %}
+        dateClick: function(info) {
+          window.location.href = '/daily-reports/add?date=' + info.dateStr;
+        },
+        {% endif %}
+        eventClick: function(info) {
+          const props = info.event.extendedProps;
+          
+          document.getElementById('modal-student-name').textContent = props.studentName;
+          document.getElementById('modal-date').textContent = props.dateFormatted;
+          
+          // Notes
+          const notesSect = document.getElementById('modal-notes-section');
+          if (props.notes && props.notes.trim() !== '') {
+            document.getElementById('modal-notes').textContent = props.notes;
+            notesSect.classList.remove('hidden');
+          } else {
+            notesSect.classList.add('hidden');
+          }
+
+          // Behavior
+          const behaviorSect = document.getElementById('modal-behavior-section');
+          if (props.behavior && props.behavior.trim() !== '') {
+            document.getElementById('modal-behavior').textContent = props.behavior;
+            behaviorSect.classList.remove('hidden');
+          } else {
+            behaviorSect.classList.add('hidden');
+          }
+
+          // Social
+          const socialSect = document.getElementById('modal-social-section');
+          if (props.social && props.social.trim() !== '') {
+            document.getElementById('modal-social').textContent = props.social;
+            socialSect.classList.remove('hidden');
+          } else {
+            socialSect.classList.add('hidden');
+          }
+
+          // Action links
+          document.getElementById('modal-edit-btn').href = '/daily-reports/' + info.event.id + '/edit';
+          document.getElementById('modal-delete-btn').href = '/daily-reports/' + info.event.id + '/delete';
+
+          // Show dialog
+          document.getElementById('report_detail_modal').showModal();
+        }
+      });
+      calendar.render();
+    });
+  </script>
+  {% endif %}
+
   {% endif %}
 </div>
 {% endblock %}

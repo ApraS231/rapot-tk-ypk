@@ -34,14 +34,14 @@ e:\Project Pribadi\RaporTK\
 │
 ├── frontend/
 │   ├── _static/            # Untuk tempat foto uploads, custom css (jika ada) dan file flat lain
-│   └── _templates/         # Berisi file-file HTML (View) Jinja2 untuk dirender oleh Routers
-│       ├── assessments/
-│       ├── base.html       # Kerangka dasar HTML berisi Navigasi (Sidebar) + dependencies script
-│       ├── dashboard.html
-│       ├── reports/        # View khusus print-out PDF (@media print CSS)
-│       └── ...
+│   ├── _templates/         # Berisi file-file HTML (View) Jinja2 untuk dirender oleh Routers
+│   │   ├── assessments/
+│   │   ├── base.html       # Kerangka dasar HTML berisi Navigasi (Sidebar) + dependencies script
+│   │   ├── dashboard.html
+│   │   ├── reports/        # View khusus print-out PDF (@media print CSS)
+│   │   └── ...
+│   └── run.py              # Script runner lokal dengan Uvicorn untuk menjalankan Backend Utama
 │
-├── run.py                  # Script runner lokal dengan Uvicorn untuk menjalankan Backend Utama
 └── requirements.txt        # Kumpulan dependencies (Library pip)
 ```
 

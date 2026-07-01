@@ -82,53 +82,16 @@ Jika Anda memiliki data lama di database SQLite (`rapor_tk.db` di root atau fold
 
 ---
 
-### Langkah 5: Instal Dependensi & Build Frontend React
+### Langkah 5: Jalankan Aplikasi
 
-Aplikasi frontend menggunakan React SPA yang perlu dikompilasi menjadi aset statis agar disajikan oleh FastAPI:
-1. Masuk ke direktori `frontend-react` dari root direktori proyek:
-   ```bash
-   cd frontend-react
-   ```
-2. Instal seluruh dependensi Node.js:
-   ```bash
-   npm install
-   ```
-3. Kompilasi aplikasi React ke build statis (`dist`):
-   ```bash
-   npm run build
-   ```
-   > [!NOTE]
-   > Hasil kompilasi berupa file HTML/CSS/JS statis disimpan di folder `frontend-react/dist`. Folder ini dibaca secara otomatis oleh FastAPI.
-
----
-
-### Langkah 6: Jalankan Aplikasi
-
-Terdapat dua mode untuk menjalankan aplikasi di lingkungan lokal Anda:
-
-#### A. Mode Produksi (Single Server — Rekomendasi)
-Pada mode ini, server FastAPI berjalan dan menyajikan file statis React yang sudah dikompilasi secara langsung pada root path `/`:
+Untuk menjalankan aplikasi di lingkungan lokal Anda:
 1. Pastikan Anda berada di root direktori proyek (`Rapor_TK`).
 2. Jalankan server:
    ```bash
-   python run.py
+   python frontend/run.py
    ```
 3. Buka web browser Anda dan akses alamat berikut:
    👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
-
-#### B. Mode Pengembangan (Hot Reloading — Otomatis)
-Jika Anda sedang memodifikasi kode program frontend/backend dan ingin perubahan langsung direfleksikan secara instan:
-1. Pastikan Anda berada di root direktori proyek (`Rapor_TK`).
-2. Jalankan perintah runner utama:
-   ```bash
-   python run.py
-   ```
-   > [!NOTE]
-   > Skrip ini secara otomatis mendeteksi folder `frontend-react` dan menjalankan Vite dev server (`npm run dev` pada port `5173`) di background secara bersamaan dengan backend FastAPI (port `8000`).
-3. Buka browser Anda dan akses dev server React di:
-   👉 **[http://localhost:5173](http://localhost:5173)**
-   > [!TIP]
-   > Seluruh request API (`/api/...`) dan berkas uploads (`/static/...`) dari port `5173` akan diteruskan (*proxied*) secara otomatis ke backend port `8000` via konfigurasi Vite proxy. Ketika Anda menghentikan terminal (Ctrl+C), skrip secara otomatis membersihkan dan menghentikan child process Node/Vite dengan aman.
 
 ---
 
@@ -160,22 +123,13 @@ Rapor_TK/
 │       ├── routers/          # Endpoint REST API JSON & Router Legasi
 │       ├── schemas/          # Validasi data input/output (Pydantic)
 │       └── services/         # Logika bisnis tambahan
-├── frontend-react/           # [NEW] Aplikasi Utama React SPA (Vite + TS)
-│   ├── src/
-│   │   ├── components/       # Komponen UI reusable (Sidebar, Topbar, Toast)
-│   │   ├── context/          # State global (AuthContext, ToastContext)
-│   │   ├── pages/            # Halaman Modul Siswa, Harian, Observasi, Evaluasi BK, Pengguna
-│   │   ├── App.tsx           # File routing utama React Router
-│   │   └── main.tsx          # Titik entri render React
-│   ├── dist/                 # Hasil build kompilasi statis (disajikan FastAPI)
-│   ├── package.json          # Script dan dependensi npm
-│   └── vite.config.ts        # Konfigurasi proxy port dev server ke port 8000
-├── frontend/                 # Direktori file static & template lama
-│   └── static/uploads/       # Tempat penyimpanan gambar & upload foto siswa
+├── frontend/                 # Direktori Aplikasi Utama (HTML, CSS, static & template Jinja2)
+│   ├── static/uploads/       # Tempat penyimpanan gambar & upload foto siswa
+│   ├── templates/            # Template HTML halaman web
+│   └── run.py                # Script entri utama untuk menjalankan aplikasi
 ├── .env                      # Pengaturan environment variable (sensitif)
 ├── migrate_data.py           # Skrip migrasi SQLite -> MySQL
-├── requirements.txt          # Daftar library Python yang dibutuhkan
-└── run.py                    # Script entri utama untuk menjalankan aplikasi
+└── requirements.txt          # Daftar library Python yang dibutuhkan
 ```
 
 ---
@@ -186,7 +140,7 @@ Rapor_TK/
 * **Penyebab**: Anda menjalankan perintah `python app.py` di folder `backend`.
 * **Solusi**: Jalankan aplikasi dari root folder (`c:\laragon\www\Rapor_TK`) menggunakan perintah:
   ```bash
-  python run.py
+  python frontend/run.py
   ```
 
 ### 2. Error: `ModuleNotFoundError: No module named '...'`

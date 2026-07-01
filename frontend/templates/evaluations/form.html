@@ -6,7 +6,11 @@
 <div class="max-w-4xl mx-auto">
   <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
     <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-xl">✍️</div>
+      <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600 flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+        </svg>
+      </div>
       <div>
         <h2 class="font-semibold text-slate-800">Evaluasi & Skoring Indikator</h2>
         <p class="text-xs text-slate-400">Pilih siswa, lengkapi data, dan isi skor penilaian di bawah ini</p>
@@ -16,10 +20,12 @@
     <form method="POST" action="/evaluations/add" class="space-y-6">
       <!-- Student metadata -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5" for="student_id">Nama Siswa <span class="text-red-500">*</span></label>
+        <div class="form-control w-full">
+          <label class="label" for="student_id">
+            <span class="label-text text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Siswa <span class="text-red-500">*</span></span>
+          </label>
           <select id="student_id" name="student_id" required
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white transition">
+            class="select select-bordered select-sm w-full focus:select-primary bg-white text-xs">
             <option value="">— Pilih Siswa —</option>
             {% for s in students %}
             <option value="{{ s.id }}" 
@@ -32,17 +38,21 @@
           </select>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5" for="date">Tanggal Penilaian <span class="text-red-500">*</span></label>
+        <div class="form-control w-full">
+          <label class="label" for="date">
+            <span class="label-text text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Penilaian <span class="text-red-500">*</span></span>
+          </label>
           <input type="date" id="date" name="date" required
             value="{{ current_date }}"
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+            class="input input-bordered input-sm w-full focus:input-primary text-xs" />
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5" for="class_name">Kelas <span class="text-red-500">*</span></label>
+        <div class="form-control w-full">
+          <label class="label" for="class_name">
+            <span class="label-text text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas <span class="text-red-500">*</span></span>
+          </label>
           <select id="class_name" name="class_name" required
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white transition">
+            class="select select-bordered select-sm w-full focus:select-primary bg-white text-xs">
             <option value="">— Pilih Kelas —</option>
             <option value="TK A" {% if preselected_student and preselected_student.class_name == 'TK A' %}selected{% endif %}>TK A</option>
             <option value="TK B" {% if preselected_student and preselected_student.class_name == 'TK B' %}selected{% endif %}>TK B</option>
@@ -50,23 +60,25 @@
           </select>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5" for="diagnosa">Diagnosa Psikolog/Dokter <span class="text-red-500">*</span></label>
+        <div class="form-control w-full">
+          <label class="label" for="diagnosa">
+            <span class="label-text text-xs font-bold text-slate-500 uppercase tracking-wider">Diagnosa Psikolog/Dokter <span class="text-red-500">*</span></span>
+          </label>
           <input type="text" id="diagnosa" name="diagnosa" required
             value="{{ preselected_student.special_needs if preselected_student else '' }}"
             placeholder="Diagnosa medis/psikologis..."
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+            class="input input-bordered input-sm w-full focus:input-primary text-xs" />
         </div>
       </div>
 
       <!-- Tab headers for domains -->
-      <div class="border-b border-slate-100 flex gap-2 overflow-x-auto pb-px">
+      <div role="tablist" class="tabs tabs-bordered overflow-x-auto pb-px">
         {% for domain_key, domain_data in indicators.items() %}
-        <button type="button" onclick="switchDomain('{{ domain_key }}')" id="tab-{{ domain_key }}"
-          class="tab-btn px-4 py-2 text-sm font-medium border-b-2 transition-all whitespace-nowrap
-          {% if loop.first %}border-primary-500 text-primary-600{% else %}border-transparent text-slate-400 hover:text-slate-600{% endif %}">
+        <a role="tab" onclick="switchDomain('{{ domain_key }}')" id="tab-{{ domain_key }}"
+          class="tab tab-bordered font-bold text-xs tab-btn whitespace-nowrap pb-2
+          {% if loop.first %}tab-active text-primary{% else %}text-slate-400{% endif %}">
           {{ domain_data.title }}
-        </button>
+        </a>
         {% endfor %}
       </div>
 
@@ -74,41 +86,43 @@
       <div class="space-y-4">
         {% for domain_key, domain_data in indicators.items() %}
         <div id="domain-content-{{ domain_key }}" class="domain-content {% if not loop.first %}hidden{% endif %} space-y-4">
-          <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex items-center justify-between">
-            <span class="text-sm text-indigo-700 font-medium">Aspek: <strong class="text-base">{{ domain_data.title }}</strong></span>
-            <span class="px-2.5 py-0.5 bg-indigo-100 text-indigo-800 rounded-full text-xs font-semibold">Bobot Penilaian: {{ (domain_data.weight * 100) | int }}%</span>
+          <div class="alert alert-info py-2.5 px-4 mb-4 flex items-center justify-between text-xs font-semibold rounded-xl bg-indigo-50 border-indigo-100 text-indigo-800">
+            <span class="text-xs text-indigo-700 font-bold">Aspek: <strong class="text-sm">{{ domain_data.title }}</strong></span>
+            <span class="px-2.5 py-0.5 bg-indigo-100 text-indigo-800 rounded-full text-xs font-extrabold">Bobot Penilaian: {{ (domain_data.weight * 100) | int }}%</span>
           </div>
 
           <div class="space-y-3">
             {% for item in domain_data['items'] %}
-            <div class="p-4 bg-white border border-slate-100 rounded-xl hover:border-slate-200 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div class="flex-1">
-                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500 font-bold text-xs mr-2">{{ loop.index }}</span>
-                <span class="text-sm font-medium text-slate-700">{{ item.text }}</span>
-              </div>
-              
-              <!-- Scoring Radios -->
-              <div class="flex items-center gap-2 sm:gap-4 justify-between md:justify-end flex-wrap">
-                <!-- BB (1) -->
-                <label class="flex items-center gap-1.5 cursor-pointer group">
-                  <input type="radio" name="{{ item.id }}" value="1" required class="w-4 h-4 text-red-600 border-slate-300 focus:ring-red-500 transition" />
-                  <span class="text-xs font-semibold text-slate-500 group-hover:text-red-600 transition">BB</span>
-                </label>
-                <!-- MB (2) -->
-                <label class="flex items-center gap-1.5 cursor-pointer group">
-                  <input type="radio" name="{{ item.id }}" value="2" class="w-4 h-4 text-orange-600 border-slate-300 focus:ring-orange-500 transition" />
-                  <span class="text-xs font-semibold text-slate-500 group-hover:text-orange-600 transition">MB</span>
-                </label>
-                <!-- BSH (3) -->
-                <label class="flex items-center gap-1.5 cursor-pointer group">
-                  <input type="radio" name="{{ item.id }}" value="3" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500 transition" />
-                  <span class="text-xs font-semibold text-slate-500 group-hover:text-blue-600 transition">BSH</span>
-                </label>
-                <!-- BSB (4) -->
-                <label class="flex items-center gap-1.5 cursor-pointer group">
-                  <input type="radio" name="{{ item.id }}" value="4" class="w-4 h-4 text-green-600 border-slate-300 focus:ring-green-500 transition" />
-                  <span class="text-xs font-semibold text-slate-500 group-hover:text-green-600 transition">BSB</span>
-                </label>
+            <div class="card bg-white border border-slate-100 rounded-xl hover:border-slate-200 transition-colors shadow-sm">
+              <div class="card-body p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex-1 flex items-start gap-2">
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500 font-extrabold text-xs flex-shrink-0">{{ loop.index }}</span>
+                  <span class="text-sm font-bold text-slate-700 leading-relaxed">{{ item.text }}</span>
+                </div>
+                
+                <!-- Scoring Radios -->
+                <div class="flex items-center gap-3 sm:gap-4 justify-between md:justify-end flex-wrap">
+                  <!-- BB (1) -->
+                  <label class="flex items-center gap-1.5 cursor-pointer group">
+                    <input type="radio" name="{{ item.id }}" value="1" required class="radio radio-error radio-sm" />
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-red-600 transition">BB</span>
+                  </label>
+                  <!-- MB (2) -->
+                  <label class="flex items-center gap-1.5 cursor-pointer group">
+                    <input type="radio" name="{{ item.id }}" value="2" class="radio radio-warning radio-sm" />
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-orange-600 transition">MB</span>
+                  </label>
+                  <!-- BSH (3) -->
+                  <label class="flex items-center gap-1.5 cursor-pointer group">
+                    <input type="radio" name="{{ item.id }}" value="3" class="radio radio-info radio-sm" />
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-blue-600 transition">BSH</span>
+                  </label>
+                  <!-- BSB (4) -->
+                  <label class="flex items-center gap-1.5 cursor-pointer group">
+                    <input type="radio" name="{{ item.id }}" value="4" class="radio radio-success radio-sm" />
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-green-600 transition">BSB</span>
+                  </label>
+                </div>
               </div>
             </div>
             {% endfor %}
@@ -120,10 +134,13 @@
       <!-- Submit area -->
       <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
         <button type="submit" id="btn-save-evaluation"
-          class="flex-1 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl text-sm transition shadow-lg hover:shadow-primary-300/30">
-          💾 Simpan & Hitung Penilaian
+          class="btn btn-primary flex-1 text-white font-semibold flex items-center justify-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+          </svg>
+          <span>Simpan & Hitung Penilaian</span>
         </button>
-        <a href="/evaluations" class="px-6 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">Batal</a>
+        <a href="/evaluations" class="btn btn-outline btn-neutral font-medium">Batal</a>
       </div>
     </form>
   </div>

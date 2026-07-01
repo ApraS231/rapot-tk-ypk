@@ -3,7 +3,6 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from typing import Optional
-from pydantic import BaseModel
 
 from backend.app.database import get_db
 from backend.app.models.student import Student
@@ -15,7 +14,6 @@ from backend.app.models.evaluation import Evaluation
 from backend.app.auth.jwt import decode_access_token
 
 import os
-import shutil
 
 templates_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),

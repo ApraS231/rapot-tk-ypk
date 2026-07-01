@@ -59,7 +59,12 @@ async def report_list(request: Request, db: Session = Depends(get_db), student_i
 
 
 @router.get("/add", response_class=HTMLResponse)
-async def report_add_page(request: Request, db: Session = Depends(get_db), student_id: Optional[int] = None):
+async def report_add_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    student_id: Optional[int] = None,
+    date: Optional[str] = None
+):
     user = _get_user(request.cookies.get("access_token"), db)
     if not user:
         return RedirectResponse(url="/login")
@@ -68,7 +73,10 @@ async def report_add_page(request: Request, db: Session = Depends(get_db), stude
     students = db.query(Student).filter(Student.teacher_id == user.id).order_by(Student.name).all()
     return templates.TemplateResponse(
         request, "daily_reports/form.html",
-        {"report": None, "user": user, "students": students, "preselect_student": student_id}
+        {
+            "report": None, "user": user, "students": students,
+            "preselect_student": student_id, "preselect_date": date
+        }
     )
 
 

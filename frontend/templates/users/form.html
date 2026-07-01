@@ -6,7 +6,11 @@
 <div class="max-w-md mx-auto">
   <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
     <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-xl">👥</div>
+      <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+      </div>
       <div>
         <h2 class="font-semibold text-slate-800">{% if edit_user %}Edit: {{ edit_user.name }}{% else %}Tambah Pengguna Baru{% endif %}</h2>
         <p class="text-xs text-slate-400">{% if edit_user %}Perbarui data akun pengguna{% else %}Buat akun untuk pendamping atau admin{% endif %}</p>
@@ -14,47 +18,69 @@
     </div>
 
     {% if error %}
-    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">⚠️ {{ error }}</div>
+    <div class="alert alert-error mb-4 py-2.5 px-4 text-xs font-semibold rounded-xl text-white">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <span>{{ error }}</span>
+    </div>
     {% endif %}
 
     <form method="POST" action="{% if edit_user %}/users/{{ edit_user.id }}/edit{% else %}/users/add{% endif %}" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="name">Nama Lengkap <span class="text-red-500">*</span></label>
+      <div class="form-control w-full">
+        <label class="label" for="name">
+          <span class="label-text font-semibold text-slate-700">Nama Lengkap <span class="text-red-500">*</span></span>
+        </label>
         <input type="text" id="name" name="name" required placeholder="Nama pengguna"
           value="{{ edit_user.name if edit_user else '' }}"
-          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+          class="input input-bordered w-full focus:input-primary text-sm" />
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="email">Email <span class="text-red-500">*</span></label>
+      <div class="form-control w-full">
+        <label class="label" for="email">
+          <span class="label-text font-semibold text-slate-700">Email <span class="text-red-500">*</span></span>
+        </label>
         <input type="email" id="email" name="email" required placeholder="email@contoh.com"
           value="{{ edit_user.email if edit_user else '' }}"
-          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+          class="input input-bordered w-full focus:input-primary text-sm" />
       </div>
 
       {% if not edit_user %}
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="password">Password <span class="text-red-500">*</span></label>
+      <div class="form-control w-full">
+        <label class="label" for="password">
+          <span class="label-text font-semibold text-slate-700">Password <span class="text-red-500">*</span></span>
+        </label>
         <input type="password" id="password" name="password" required placeholder="Minimal 8 karakter"
-          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 transition" />
+          class="input input-bordered w-full focus:input-primary text-sm" />
       </div>
       {% endif %}
 
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1.5" for="role">Role <span class="text-red-500">*</span></label>
+      <div class="form-control w-full">
+        <label class="label" for="role">
+          <span class="label-text font-semibold text-slate-700">Role <span class="text-red-500">*</span></span>
+        </label>
         <select id="role" name="role"
-          class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white transition">
-          <option value="pendamping" {% if edit_user and edit_user.role == 'pendamping' %}selected{% endif %}>Pendamping / Shadow Teacher</option>
-          <option value="admin" {% if edit_user and edit_user.role == 'admin' %}selected{% endif %}>Admin</option>
+          class="select select-bordered w-full focus:select-primary text-sm bg-white">
+          <option value="pendamping" selected>Pendamping / Shadow Teacher</option>
         </select>
       </div>
 
-      <div class="flex items-center gap-3 pt-2">
+      <div class="flex items-center gap-3 pt-4">
         <button type="submit" id="btn-save-user"
-          class="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl text-sm transition shadow">
-          {% if edit_user %}💾 Simpan Perubahan{% else %}✅ Tambah Pengguna{% endif %}
+          class="btn btn-primary flex-1 text-white font-semibold flex items-center justify-center gap-1.5 cursor-pointer">
+          {% if edit_user %}
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+          </svg>
+          <span>Simpan Perubahan</span>
+          {% else %}
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Tambah Pengguna</span>
+          {% endif %}
         </button>
-        <a href="/users" class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">Batal</a>
+        <a href="/users" class="btn btn-outline btn-neutral font-medium">Batal</a>
       </div>
     </form>
   </div>

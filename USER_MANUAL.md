@@ -6,7 +6,7 @@ Selamat datang di aplikasi **E-Raport Taman Kanak-Kanak untuk Anak Berkebutuhan 
 
 ## 1. Memulai Aplikasi
 
-1. Pastikan server sudah berjalan di terminal dengan perintah `python run.py`.
+1. Pastikan server sudah berjalan di terminal dengan perintah `python frontend/run.py`.
 2. Buka browser dan pergi ke tautan `http://127.0.0.1:8000`.
 3. Anda akan diarahkan ke halaman **Login**.
 4. Gunakan kredensial berikut untuk masuk sebagai administrator utama (bila belum diubah):

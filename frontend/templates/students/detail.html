@@ -6,115 +6,181 @@
 <div class="space-y-5">
 
   <!-- Student Card -->
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-    <div class="flex items-start justify-between flex-wrap gap-4">
-      <div class="flex items-center gap-4">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-          {{ student.name[0].upper() }}
-        </div>
-        <div>
-          <h2 class="text-xl font-bold text-slate-800">{{ student.name }}</h2>
-          <div class="flex items-center gap-2 mt-1 flex-wrap">
-            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-lg text-xs">{{ student.age }} tahun</span>
-            {% if student.class_name %}
-            <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-xs">{{ student.class_name }}</span>
-            {% endif %}
-            {% if student.special_needs %}
-            <span class="px-2 py-0.5 bg-orange-50 text-orange-700 rounded-lg text-xs">{{ student.special_needs }}</span>
+  <div class="card bg-white shadow-sm border border-slate-100">
+    <div class="card-body p-6">
+      <div class="flex items-start justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+            {{ student.name[0].upper() }}
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-slate-800">{{ student.name }}</h2>
+            <div class="flex items-center gap-2 mt-1 flex-wrap">
+              <span class="badge badge-ghost badge-sm text-slate-600 font-semibold">{{ student.age }} tahun</span>
+              {% if student.class_name %}
+              <span class="badge badge-info badge-sm text-white font-semibold">{{ student.class_name }}</span>
+              {% endif %}
+              {% if student.special_needs %}
+              <span class="badge badge-warning badge-sm text-amber-900 font-semibold">{{ student.special_needs }}</span>
+              {% endif %}
+            </div>
+            {% if student.created_at %}
+            <p class="text-xs text-slate-400 mt-1">Terdaftar: {{ student.created_at.strftime('%d %B %Y') }}</p>
             {% endif %}
           </div>
-          {% if student.created_at %}
-          <p class="text-xs text-slate-400 mt-1">Terdaftar: {{ student.created_at.strftime('%d %B %Y') }}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          {% if user.role == 'admin' %}
+          <a href="/students/{{ student.id }}/edit"
+             class="btn btn-outline btn-sm font-semibold flex items-center gap-1.5 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            <span>Edit Siswa</span>
+          </a>
+          {% endif %}
+          {% if user.role != 'admin' %}
+          <a href="/daily-reports/add?student_id={{ student.id }}"
+             class="btn btn-success btn-sm text-white font-semibold transition shadow flex items-center gap-1.5 hover:-translate-y-0.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7-7H5"/>
+            </svg>
+            <span>Input Harian</span>
+          </a>
+          <a href="/assessments/add?student_id={{ student.id }}"
+             class="btn btn-primary btn-sm text-white font-semibold transition shadow flex items-center gap-1.5 hover:-translate-y-0.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7-7H5"/>
+            </svg>
+            <span>Raport</span>
+          </a>
           {% endif %}
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        {% if user.role == 'admin' %}
-        <a href="/students/{{ student.id }}/edit"
-           class="px-3 py-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm text-slate-600 transition">✏️ Edit Siswa</a>
-        {% endif %}
-        {% if user.role != 'admin' %}
-        <a href="/daily-reports/add?student_id={{ student.id }}"
-           class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition shadow">+ Input Harian</a>
-        <a href="/assessments/add?student_id={{ student.id }}"
-           class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition shadow">+ Raport</a>
-        {% endif %}
-      </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-    <!-- Recent Daily Reports -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="font-semibold text-slate-700">📝 Catatan Perkembangan Terkini</h3>
-        <a href="/daily-reports?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline">Semua →</a>
-      </div>
-      {% if recent_reports %}
-      <div class="space-y-3">
-        {% for r in recent_reports %}
-        <div class="p-3 bg-slate-50 rounded-xl text-sm">
-          <div class="flex items-center justify-between mb-1">
-            <span class="font-medium text-slate-700">{{ r.date.strftime('%d %B %Y') }}</span>
-            {% if user.role != 'admin' %}
-            <a href="/daily-reports/{{ r.id }}/edit" class="text-xs text-slate-400 hover:text-primary-600">Edit</a>
-            {% endif %}
+  <!-- Golden Ratio Split Layout -->
+  <div class="grid-golden-ratio">
+    
+    <!-- Left Column: Perkembangan & Galeri (Golden: 1.618) -->
+    <div class="space-y-5">
+      <!-- Recent Daily Reports -->
+      <div class="card bg-white shadow-sm border border-slate-100">
+        <div class="card-body p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="card-title text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span>Catatan Perkembangan Terkini</span>
+            </h3>
+            <a href="/daily-reports?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline flex items-center gap-0.5 font-semibold">
+              <span>Semua</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
           </div>
-          {% if r.notes %}<p class="text-slate-600 text-xs line-clamp-2">{{ r.notes }}</p>{% endif %}
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="text-sm text-slate-400 text-center py-4">Belum ada catatan harian</p>
-      {% endif %}
-    </div>
-
-    <!-- Assessments -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="font-semibold text-slate-700">📈 Raport Kualitatif</h3>
-        <a href="/assessments?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline">Semua →</a>
-      </div>
-      {% if assessments %}
-      <div class="space-y-3">
-        {% for a in assessments %}
-        <div class="p-3 bg-slate-50 rounded-xl">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-medium text-slate-700">{{ a.period }}</span>
-            <div class="flex items-center gap-1">
-              <a href="/assessments/{{ a.id }}/print" class="text-xs text-blue-600 hover:underline">🖨️ Cetak</a>
-              {% if user.role != 'admin' %}
-              <a href="/assessments/{{ a.id }}/edit" class="text-xs text-slate-400 hover:text-primary-600 ml-2">Edit</a>
-              {% endif %}
+          {% if recent_reports %}
+          <div class="space-y-3">
+            {% for r in recent_reports %}
+            <div class="p-3 bg-slate-50 rounded-xl text-sm">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-semibold text-slate-700">{{ r.date.strftime('%d %B %Y') }}</span>
+                {% if user.role != 'admin' %}
+                <a href="/daily-reports/{{ r.id }}/edit" class="text-xs text-slate-400 hover:text-primary-600 font-semibold">Edit</a>
+                {% endif %}
+              </div>
+              {% if r.notes %}<p class="text-slate-600 text-xs line-clamp-2">{{ r.notes }}</p>{% endif %}
             </div>
+            {% endfor %}
           </div>
-          {% if a.summary %}<p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ a.summary }}</p>{% endif %}
+          {% else %}
+          <p class="text-sm text-slate-400 text-center py-4">Belum ada catatan harian</p>
+          {% endif %}
         </div>
-        {% endfor %}
       </div>
-      {% else %}
-      <p class="text-sm text-slate-400 text-center py-4">Belum ada raport</p>
+
+      <!-- Gallery Preview -->
+      {% if gallery_items %}
+      <div class="card bg-white shadow-sm border border-slate-100">
+        <div class="card-body p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="card-title text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span>Galeri Kegiatan</span>
+            </h3>
+            <a href="/gallery?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline flex items-center gap-0.5 font-semibold">
+              <span>Lihat semua</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            {% for item in gallery_items[:4] %}
+            <div class="group relative aspect-square rounded-xl overflow-hidden bg-slate-100">
+              <img src="{{ item.image_path }}" alt="{{ item.description or 'Foto kegiatan' }}"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
       {% endif %}
     </div>
-  </div>
 
-  <!-- Gallery Preview -->
-  {% if gallery_items %}
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="font-semibold text-slate-700">📸 Galeri Kegiatan</h3>
-      <a href="/gallery?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline">Lihat semua →</a>
-    </div>
-    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-      {% for item in gallery_items %}
-      <div class="group relative aspect-square rounded-xl overflow-hidden bg-slate-100">
-        <img src="{{ item.image_path }}" alt="{{ item.description or 'Foto kegiatan' }}"
-             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+    <!-- Right Column: Raport Kualitatif (Golden: 1) -->
+    <div class="space-y-5">
+      <div class="card bg-white shadow-sm border border-slate-100">
+        <div class="card-body p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="card-title text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              <span>Raport Kualitatif</span>
+            </h3>
+            <a href="/assessments?student_id={{ student.id }}" class="text-xs text-primary-600 hover:underline flex items-center gap-0.5 font-semibold">
+              <span>Semua</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+          {% if assessments %}
+          <div class="space-y-3">
+            {% for a in assessments %}
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-slate-700">{{ a.period }}</span>
+                <div class="flex items-center gap-1.5">
+                  <a href="/reports/{{ a.id }}/view" class="text-xs text-blue-600 hover:underline flex items-center gap-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h8z"/>
+                    </svg>
+                    <span>Lihat</span>
+                  </a>
+                  {% if user.role != 'admin' %}
+                  <a href="/assessments/{{ a.id }}/edit" class="text-xs text-slate-400 hover:text-primary-600 ml-2 font-semibold">Edit</a>
+                  {% endif %}
+                </div>
+              </div>
+              {% if a.summary %}<p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ a.summary }}</p>{% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-sm text-slate-400 text-center py-4">Belum ada raport</p>
+          {% endif %}
+        </div>
       </div>
-      {% endfor %}
     </div>
+
   </div>
-  {% endif %}
 
 </div>
 {% endblock %}
