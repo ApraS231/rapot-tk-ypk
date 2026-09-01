@@ -84,14 +84,36 @@ Jika Anda memiliki data lama di database SQLite (`rapor_tk.db` di root atau fold
 
 ### Langkah 5: Jalankan Aplikasi
 
-Untuk menjalankan aplikasi di lingkungan lokal Anda:
-1. Pastikan Anda berada di root direktori proyek (`Rapor_TK`).
-2. Jalankan server:
-   ```bash
-   python frontend/run.py
-   ```
-3. Buka web browser Anda dan akses alamat berikut:
-   👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+Tersedia beberapa cara mudah untuk menjalankan server Uvicorn dan Frontend React:
+
+#### Opsi A: Server Penuh (FastAPI Uvicorn + Frontend React SPA) — *Direkomendasikan*
+Jalankan satu perintah dari root folder, Uvicorn akan melayani REST API sekaligus Frontend React di port `8000`:
+```bash
+python run.py
+```
+*Atau klik dua kali file **`start.bat`** di Windows Explorer.*
+
+Akses aplikasi di browser:
+👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+
+---
+
+#### Opsi B: Mode Pengembangan Dual (Uvicorn + Vite Dev Server dengan Hot-Reload)
+Jika Anda sedang mengembangkan kode React dan ingin fitur Hot-Module-Replacement (HMR):
+```bash
+python run_dev.py
+```
+*Atau klik dua kali file **`dev.bat`** di Windows Explorer.*
+
+Akses frontend pengembangan di:
+👉 **[http://localhost:5173](http://localhost:5173)** (Otomatis proxy ke backend Uvicorn di port `8000`)
+
+---
+
+#### Opsi C: Perintah Langsung CLI Uvicorn
+```bash
+uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+```
 
 ---
 

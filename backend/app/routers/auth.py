@@ -78,11 +78,33 @@ async def root(request: Request):
 
 @router.post("/api/auth/login")
 async def api_login(
+    request: Request,
     response: Response,
-    email: str = Form(...),
-    password: str = Form(...),
     db: Session = Depends(get_db),
 ):
+    email = None
+    password = None
+    
+    content_type = request.headers.get("content-type", "")
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            email = body.get("email")
+            password = body.get("password")
+        except Exception:
+            pass
+    
+    if not email or not password:
+        try:
+            form = await request.form()
+            email = form.get("email") or email
+            password = form.get("password") or password
+        except Exception:
+            pass
+
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email dan PIN wajib diisi")
+
     user = db.query(User).filter(User.email == email).first()
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Email atau PIN salah")

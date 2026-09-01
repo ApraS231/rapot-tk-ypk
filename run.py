@@ -1,10 +1,9 @@
-# pyrefly: ignore [missing-import]
 import os
 import sys
 import uvicorn
 
-# Get the project root directory (parent of frontend folder)
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Get the project root directory
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Add root folder to sys.path to ensure backend module is discoverable by uvicorn
 if ROOT_DIR not in sys.path:
@@ -12,7 +11,7 @@ if ROOT_DIR not in sys.path:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("🚀 E-Raport TK ABK Server (FastAPI + React)")
+    print("🚀 E-Raport TK ABK - FastAPI + React Server")
     print("📍 URL      : http://127.0.0.1:8000")
     print("📚 API Docs : http://127.0.0.1:8000/docs")
     print("=" * 60)
@@ -25,4 +24,3 @@ if __name__ == "__main__":
         )
     except KeyboardInterrupt:
         print("\n[INFO] Server stopped by user.")
-
